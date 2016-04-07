@@ -1,1 +1,2 @@
-## Node.js apiÎÄµµ ÖĞÎÄ·­ÒëÖĞ
+## Node.js v4.42 LTS apiæ–‡æ¡£ ä¸­æ–‡ç¿»è¯‘ä¸­...
+åˆå§‹æ–‡æ¡£æ¥è‡ª [Nodeå®˜æ–¹ä»“åº“](https://github.com/nodejs/node/tree/v4.4.2/doc/api)
