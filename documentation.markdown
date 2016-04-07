@@ -1,91 +1,49 @@
-# About this Documentation
+# 关于本文档
 
 <!-- type=misc -->
 
-The goal of this documentation is to comprehensively explain the Node.js
-API, both from a reference as well as a conceptual point of view.  Each
-section describes a built-in module or high-level concept.
+本文档的目标是从参考引用和概念性观点来全面地描述 Node.js 的 API。每个章节都描述了一个内置模块或高级概念。
 
-Where appropriate, property types, method arguments, and the arguments
-provided to event handlers are detailed in a list underneath the topic
-heading.
-
-Every `.html` document has a corresponding `.json` document presenting
-the same information in a structured manner.  This feature is
-experimental, and added for the benefit of IDEs and other utilities that
-wish to do programmatic things with the documentation.
-
-Every `.html` and `.json` file is generated based on the corresponding
-`.markdown` file in the `doc/api/` folder in Node.js's source tree.  The
-documentation is generated using the `tools/doc/generate.js` program.
-The HTML template is located at `doc/template.html`.
+该中文翻译文档不包含[官方api](https://nodejs.org/dist/latest-v4.x/docs/api/)的属性方法列表导航、html文件、json文件等特性。
 
 
-If you find a error in this documentation, please [submit an issue][]
-or see [the contributing guide][] for directions on how to submit a patch.
+如果你在文档中发现了错误，请 [提交问题][https://github.com/nodejs/node/issues/new]或者查看 [贡献指南][https://github.com/nodejs/node/blob/master/CONTRIBUTING.md] 来直接提交修补代码。
 
-## Stability Index
+## 稳定性指数
 
 <!--type=misc-->
 
-Throughout the documentation, you will see indications of a section's
-stability.  The Node.js API is still somewhat changing, and as it
-matures, certain parts are more reliable than others.  Some are so
-proven, and so relied upon, that they are unlikely to ever change at
-all.  Others are brand new and experimental, or known to be hazardous
-and in the process of being redesigned.
+贯穿整个文档，你将看到每个章节都会有稳定性指数。Node.js API 还在或多或少地改进中，成熟的部分会比其他章节更值得信赖。  一些久经考验的、被大量依赖的 API 几乎不会再改变。其它的一些新增的、实验性的、或者已知具有危险性的部分正在被重新设计中。
 
-The stability indices are as follows:
+稳定性指数如下：
 
 ```
-Stability: 0 - Deprecated
-This feature is known to be problematic, and changes are
-planned.  Do not rely on it.  Use of the feature may cause warnings.  Backwards
-compatibility should not be expected.
+稳定性： 0 - 弃用
+该部分功能存在已知问题，并已计划改变。不要使用它们，否则可能会引起警告。不要期待向后兼容了。
 ```
 
 ```
-Stability: 1 - Experimental
-This feature is subject to change, and is gated by a command line flag.
-It may change or be removed in future versions.
+稳定性： 1 - 实验性
+该部分功能可能发生变化，并且命令行标志是封闭的。在未来的版本中可能会发生修改或者被移除。
 ```
 
 ```
-Stability: 2 - Stable
-The API has proven satisfactory. Compatibility with the npm ecosystem
-is a high priority, and will not be broken unless absolutely necessary.
+稳定性： 2 - 稳定
+该 API 久经考验且让人满意。会优先和 npm 系统兼容，除非真的有必要否则不会变化。
 ```
 
 ```
-Stability: 3 - Locked
-Only fixes related to security, performance, or bug fixes will be accepted.
-Please do not suggest API changes in this area; they will be refused.
+稳定性： 3 - 已锁定
+只有遇到安全、性能、bug才会接受修改。请不要提出更改建议，否则会被拒绝。
 ```
 
-## JSON Output
+## 系统调用与操作说明
 
-    Stability: 1 - Experimental
+类似 open(2) 和 read(2) 的系统调用定义了用户程序和底层操作系统之间的接口。简单包装了一个系统调用的 Node 函数，类似 `fs.open()`，将会文档化。该文档将会链接到相关的操作说明（简称手册页），并描述该系统调用是如何工作的。
 
-Every HTML file in the markdown has a corresponding JSON file with the
-same data.
+**警告：** 某些系统调用， 就像 lchown(2)， are 特定于 BSD 的。这意味着，像 `fs.lchown()` 仅仅工作在 Mac OS X 和其它 BSD 驱动的系统，在 Linux 上就不可用。
 
-This feature was added in Node.js v0.6.12.  It is experimental.
+大多数 Unix 系统调用与 Windows 等价，但相对于 Linux 和 OS X，Windows 上的行为可能有所不同。看一个微妙的例子，有时候在 Windows 上不可能替代 Unix 的系统调用语义，查看 [Node issue 4760](https://github.com/nodejs/node/issues/4760)。
 
-## Syscalls and man pages
-
-System calls like open(2) and read(2) define the interface between user programs
-and the underlying operating system. Node functions which simply wrap a syscall,
-like `fs.open()`, will document that. The docs link to the corresponding man
-pages (short for manual pages) which describe how the syscalls work.
-
-**Caveat:** some syscalls, like lchown(2), are BSD-specific. That means, for
-example, that `fs.lchown()` only works on Mac OS X and other BSD-derived systems,
-and is not available on Linux.
-
-Most Unix syscalls have Windows equivalents, but behavior may differ on Windows
-relative to Linux and OS X. For an example of the subtle ways in which it's
-sometimes impossible to replace Unix syscall semantics on Windows, see [Node
-issue 4760](https://github.com/nodejs/node/issues/4760).
-
-[submit an issue]: https://github.com/nodejs/node/issues/new
-[the contributing guide]: https://github.com/nodejs/node/blob/master/CONTRIBUTING.md
+[提交问题]: https://github.com/nodejs/node/issues/new
+[贡献指南]: https://github.com/nodejs/node/blob/master/CONTRIBUTING.md
