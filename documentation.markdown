@@ -7,7 +7,7 @@
 该中文翻译文档不包含[官方api](https://nodejs.org/dist/latest-v4.x/docs/api/)的属性方法列表导航、html文件、json文件等特性。
 
 
-如果你在文档中发现了错误，请 [提交问题][https://github.com/nodejs/node/issues/new]或者查看 [贡献指南][https://github.com/nodejs/node/blob/master/CONTRIBUTING.md] 来直接提交修补代码。
+如果你在文档中发现了错误，请 [提交问题](https://github.com/nodejs/node/issues/new) 或者查看 [贡献指南](https://github.com/nodejs/node/blob/master/CONTRIBUTING.md) 来直接提交修补代码。
 
 ## 稳定性指数
 
