@@ -1,48 +1,41 @@
-# File System
+# 文件系统
 
-    Stability: 2 - Stable
+    稳定性： 2 - 稳定
 
 <!--name=fs-->
 
-File I/O is provided by simple wrappers around standard POSIX functions.  To
-use this module do `require('fs')`. All the methods have asynchronous and
-synchronous forms.
+文件的 I/O 操作是由标准 POSIX 函数简单包装后提供的。通过 `require('fs')` 使用该模块。所有方法都同时有异步和同步模式。
 
-The asynchronous form always takes a completion callback as its last argument.
-The arguments passed to the completion callback depend on the method, but the
-first argument is always reserved for an exception. If the operation was
-completed successfully, then the first argument will be `null` or `undefined`.
+异步方法的最后一个参数总是回调函数，代表操作完成。该回调函数的参数取决于具体方法，但第一个参数往往都是作为捕获到的异常，如果操作成功完成，没有发生异常，那么第一个参数将是 `null` 或 `undefined`。
 
-When using the synchronous form any exceptions are immediately thrown.
-You can use try/catch to handle exceptions or allow them to bubble up.
+当使用同步操作时，发生任何错误将会立即抛出异常，可以使用 try/catch 来处理异常或允许异常冒泡。
 
-Here is an example of the asynchronous version:
+这是一个异步操作的例子：
 
 ```js
 const fs = require('fs');
 
 fs.unlink('/tmp/hello', (err) => {
   if (err) throw err;
-  console.log('successfully deleted /tmp/hello');
+  console.log('成功删除 /tmp/hello');
 });
 ```
 
-Here is the synchronous version:
+这是对应的同步操作的例子:
 
 ```js
 const fs = require('fs');
 
 fs.unlinkSync('/tmp/hello');
-console.log('successfully deleted /tmp/hello');
+console.log('成功删除 /tmp/hello');
 ```
 
-With the asynchronous methods there is no guaranteed ordering. So the
-following is prone to error:
+异步方法无法保证操作顺序，因此下面的代码很容易出错：
 
 ```js
 fs.rename('/tmp/hello', '/tmp/world', (err) => {
   if (err) throw err;
-  console.log('renamed complete');
+  console.log('重命名成功');
 });
 fs.stat('/tmp/world', (err, stats) => {
   if (err) throw err;
@@ -50,8 +43,7 @@ fs.stat('/tmp/world', (err, stats) => {
 });
 ```
 
-It could be that `fs.stat` is executed before `fs.rename`.
-The correct way to do this is to chain the callbacks.
+有可能 `fs.stat` 在 `fs.rename` 重命名方法完成之前就先执行了，正确的方式应该是采用回调函数嵌套：
 
 ```js
 fs.rename('/tmp/hello', '/tmp/world', (err) => {
@@ -63,16 +55,11 @@ fs.rename('/tmp/hello', '/tmp/world', (err) => {
 });
 ```
 
-In busy processes, the programmer is _strongly encouraged_ to use the
-asynchronous versions of these calls. The synchronous versions will block
-the entire process until they complete--halting all connections.
+在繁忙的进程中，我们 _强烈建议_ 使用异步模式的方法。同步方法会阻塞整个进程，直到方法完成。
 
-The relative path to a filename can be used. Remember, however, that this path
-will be relative to `process.cwd()`.
+你可能会用到文件的相对路径，记住，相对路径是对于 `process.cwd()` 而言的。
 
-Most fs functions let you omit the callback argument. If you do, a default
-callback is used that rethrows errors. To get a trace to the original call
-site, set the `NODE_DEBUG` environment variable:
+大部分文件操作的方法允许你省略回调函数，如果你这样做了，会用一个默认的回调函数来抛出异常。为了得到原始调用的堆栈信息，需要设置环境变量 `NODE_DEBUG`。
 
 ```
 $ cat script.js
@@ -94,57 +81,54 @@ Error: EISDIR, read
     <etc.>
 ```
 
-## Class: fs.FSWatcher
+## 类： fs.FSWatcher
 
-Objects returned from `fs.watch()` are of this type.
+从 `fs.watch()` 返回的对象类型。
 
-### Event: 'change'
+### 事件： 'change'
 
-* `event` {String} The type of fs change
-* `filename` {String} The filename that changed (if relevant/available)
+* `event` {String} fs 改变的类型
+* `filename` {String} 改变的文件名 (如果能明确得到文件名)
 
-Emitted when something changes in a watched directory or file.
-See more details in [`fs.watch()`][].
+当监听的文件夹或文件发生变化时触发。更多信息请查看 [`fs.watch()`][]。
 
-### Event: 'error'
+### 事件： 'error'
 
 * `error` {Error}
 
-Emitted when an error occurs.
+当错误发生时触发。
 
 ### watcher.close()
 
-Stop watching for changes on the given `fs.FSWatcher`.
+停止监听 `fs.FSWatcher` 中的更改。
 
-## Class: fs.ReadStream
+## 类： fs.ReadStream
 
-`ReadStream` is a [Readable Stream][].
+`ReadStream` 是 [Readable Stream][] 类型。
 
-### Event: 'open'
+### 事件： 'open'
 
-* `fd` {Number} Integer file descriptor used by the ReadStream.
+* `fd` {Number} ReadStream 所使用的文件描述符（整数）。
 
-Emitted when the ReadStream's file is opened.
+当文件创建的 ReadStream 被打开时触发。
 
 ### readStream.path
 
-The path to the file the stream is reading from.
+该文件流所对应的当初读取的文件的路径。
 
-## Class: fs.Stats
+## 类： fs.Stats
 
-Objects returned from [`fs.stat()`][], [`fs.lstat()`][] and [`fs.fstat()`][] and their
-synchronous counterparts are of this type.
+[`fs.stat()`][]， [`fs.lstat()`][]， [`fs.fstat()`][] 以及对应的同步方法的返回值类型。
 
  - `stats.isFile()`
  - `stats.isDirectory()`
  - `stats.isBlockDevice()`
  - `stats.isCharacterDevice()`
- - `stats.isSymbolicLink()` (only valid with [`fs.lstat()`][])
+ - `stats.isSymbolicLink()` (只对 [`fs.lstat()`][] 有效)
  - `stats.isFIFO()`
  - `stats.isSocket()`
 
-For a regular file [`util.inspect(stats)`][] would return a string very
-similar to this:
+对一个普通的文件调用 `.stat()` 并将返回值传入 [`util.inspect(stats)`][] 会得到类似下面的字符串：
 
 ```js
 {
@@ -165,79 +149,52 @@ similar to this:
 }
 ```
 
-Please note that `atime`, `mtime`, `birthtime`, and `ctime` are
-instances of [`Date`][MDN-Date] object and to compare the values of
-these objects you should use appropriate methods. For most general
-uses [`getTime()`][MDN-Date-getTime] will return the number of
-milliseconds elapsed since _1 January 1970 00:00:00 UTC_ and this
-integer should be sufficient for any comparison, however there are
-additional methods which can be used for displaying fuzzy information.
-More details can be found in the [MDN JavaScript Reference][MDN-Date]
-page.
+请注意 `atime`, `mtime`, `birthtime`, 以及 `ctime` 都是 [`Date`][MDN-Date] 的示例，你需要使用恰当的方法进行比较。通常使用 [`getTime()`][MDN-Date-getTime] 来获取从 UTC 时间 1970年1月1日 00:00:00 到现在的毫秒数，这个整数对于比较来说是足够用的。
+也有一些额外的方法能够显示模糊信息，更多内容请查看 [MDN JavaScript Reference][MDN-Date] 页。
 
-### Stat Time Values
+### 统计时间
 
-The times in the stat object have the following semantics:
+统计对象（stat object）中的时间有如下语义：
 
-* `atime` "Access Time" - Time when file data last accessed.  Changed
-  by the `mknod(2)`, `utimes(2)`, and `read(2)` system calls.
-* `mtime` "Modified Time" - Time when file data last modified.
-  Changed by the `mknod(2)`, `utimes(2)`, and `write(2)` system calls.
-* `ctime` "Change Time" - Time when file status was last changed
-  (inode data modification).  Changed by the `chmod(2)`, `chown(2)`,
-  `link(2)`, `mknod(2)`, `rename(2)`, `unlink(2)`, `utimes(2)`,
-  `read(2)`, and `write(2)` system calls.
-* `birthtime` "Birth Time" -  Time of file creation. Set once when the
-  file is created.  On filesystems where birthtime is not available,
-  this field may instead hold either the `ctime` or
-  `1970-01-01T00:00Z` (ie, unix epoch timestamp `0`). Note that this
-  value may be greater than `atime` or `mtime` in this case. On Darwin
-  and other FreeBSD variants, also set if the `atime` is explicitly
-  set to an earlier value than the current `birthtime` using the
-  `utimes(2)` system call.
+* `atime` "Access Time" - 文件最后一次访问时间。可以通过 `mknod(2)`, `utimes(2)`, 和 `read(2)` 系统调用来改变。
+* `mtime` "Modified Time" - 文件最后一次修改时间。可以通过 `mknod(2)`, `utimes(2)`, 和 `write(2)` 系统调用来改变。
+* `ctime` "Change Time" - 文件最后一次变更时间（inode 数据修改)。可以通过 `chmod(2)`, `chown(2)`, `link(2)`, `mknod(2)`, `rename(2)`, `unlink(2)`, `utimes(2)`, `read(2)`, 和 `write(2)` 系统调用来改变。
+* `birthtime` "Birth Time" -  文件创建时间。仅文件创建时生成一次。
+ 在无法获得 birthtime 的文件系统中，这个字段可能会使用 `ctime` or `1970-01-01T00:00Z` (即 unix 的纪元时间戳 `0`)。
+ 注意该情况下这个值可能会比 `atime` 或 `mtime` 大，在 Darwin 或其它变体中，也使用 `utimes(2)` 系统调用来明确地将 `atime` 设置成比它当前的 `birthtime` 更早的值。
 
-Prior to Node v0.12, the `ctime` held the `birthtime` on Windows
-systems.  Note that as of v0.12, `ctime` is not "creation time", and
-on Unix systems, it never was.
+在 Node v0.12 版本之前，Windows 系统下 `ctime` 会保留 `birthtime` 的值。注意在 v0.12 版本中， `ctime` 不是 "creation time（创建时间），"并且在 unix 系统中一直都不是。
 
-## Class: fs.WriteStream
+## 类： fs.WriteStream
 
-`WriteStream` is a [Writable Stream][].
+`WriteStream` 是 [Writable Stream][] 类型。
 
-### Event: 'open'
+### 事件： 'open'
 
-* `fd` {Number} Integer file descriptor used by the WriteStream.
+* `fd` {Number} WriteStream 所使用的文件描述符（整数）。
 
-Emitted when the WriteStream's file is opened.
+当文件创建的 WriteStream 被打开时触发。
 
 ### writeStream.bytesWritten
 
-The number of bytes written so far. Does not include data that is still queued
-for writing.
+已经写入的字节数，不包含等待写入的数据。
 
 ### writeStream.path
 
-The path to the file the stream is writing to.
+该文件流写入的文件路径。
 
 ## fs.access(path[, mode], callback)
 
-Tests a user's permissions for the file specified by `path`. `mode` is an
-optional integer that specifies the accessibility checks to be performed. The
-following constants define the possible values of `mode`. It is possible to
-create a mask consisting of the bitwise OR of two or more values.
+检测用户对 `path` 指向文件的用户权限。 `mode` 是一个可选参数，用来指定要检测的权限。下面列出了 `mode` 可能的值。
+可以创建一个或多个值组成的掩码运算来检测权限。
 
-- `fs.F_OK` - File is visible to the calling process. This is useful for
-determining if a file exists, but says nothing about `rwx` permissions.
-Default if no `mode` is specified.
-- `fs.R_OK` - File can be read by the calling process.
-- `fs.W_OK` - File can be written by the calling process.
-- `fs.X_OK` - File can be executed by the calling process. This has no effect
-on Windows (will behave like `fs.F_OK`).
+- `fs.F_OK` - 文件对调用进程是可见的。对于检测文件是否存在这很有用，但 `rwx` 权限则什么也不返回。
+当 `mode` 未指定时这是默认值。
+- `fs.R_OK` - 文件对调用进程是可读的。
+- `fs.W_OK` - 文件对调用进程是可写的。
+- `fs.X_OK` - 文件可以被调用进程执行。 Windows 下无效(将等同于 `fs.F_OK`).
 
-The final argument, `callback`, is a callback function that is invoked with
-a possible error argument. If any of the accessibility checks fail, the error
-argument will be populated. The following example checks if the file
-`/etc/passwd` can be read and written by the current process.
+最后一个参数 `callback` 是回调函数，如果权限检测出错则会将错误传入。下面这个例子会检测当前进程对 `/etc/passwd` 是否有读写权限。
 
 ```js
 fs.access('/etc/passwd', fs.R_OK | fs.W_OK, (err) => {
@@ -247,32 +204,31 @@ fs.access('/etc/passwd', fs.R_OK | fs.W_OK, (err) => {
 
 ## fs.accessSync(path[, mode])
 
-Synchronous version of [`fs.access()`][]. This throws if any accessibility checks
-fail, and does nothing otherwise.
+[`fs.access()`][] 的同步版本。若权限检测失败则会抛出异常，否则什么都不做。
 
 ## fs.appendFile(file, data[, options], callback)
 
-* `file` {String} filename
+* `file` {String} 文件名
 * `data` {String|Buffer}
 * `options` {Object|String}
-  * `encoding` {String|Null} default = `'utf8'`
-  * `mode` {Number} default = `0o666`
-  * `flag` {String} default = `'a'`
+  * `encoding` {String|Null} 默认值 = `'utf8'`
+  * `mode` {Number} 默认值 = `0o666`
+  * `flag` {String} 默认值 = `'a'`
 * `callback` {Function}
 
-Asynchronously append data to a file, creating the file if it does not yet exist.
-`data` can be a string or a buffer.
+异步地给文件附加数据，如果文件不存在则创建一个。
+`data` 可以是字符串或 buffer。
 
-Example:
+示例：
 
 ```js
 fs.appendFile('message.txt', 'data to append', (err) => {
   if (err) throw err;
-  console.log('The "data to append" was appended to file!');
+  console.log('"data to append" 已附加到该文件上！');
 });
 ```
 
-If `options` is a string, then it specifies the encoding. Example:
+如果 `options` 是字符串，则代表编码类型。 示例：
 
 ```js
 fs.appendFile('message.txt', 'data to append', 'utf8', callback);
@@ -280,34 +236,31 @@ fs.appendFile('message.txt', 'data to append', 'utf8', callback);
 
 ## fs.appendFileSync(file, data[, options])
 
-The synchronous version of [`fs.appendFile()`][]. Returns `undefined`.
+[`fs.appendFile()`][] 的同步版本。 返回 `undefined`。
 
 ## fs.chmod(path, mode, callback)
 
-Asynchronous chmod(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 chmod(2)。 回调函数的参数是可能出现的异常。
 
 ## fs.chmodSync(path, mode)
 
-Synchronous chmod(2). Returns `undefined`.
+同步函数 chmod(2)。 返回 `undefined`.
 
 ## fs.chown(path, uid, gid, callback)
 
-Asynchronous chown(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 chown(2)。 回调函数的参数是可能出现的异常。
 
 ## fs.chownSync(path, uid, gid)
 
-Synchronous chown(2). Returns `undefined`.
+同步函数 chown(2)。 返回 `undefined`.
 
 ## fs.close(fd, callback)
 
-Asynchronous close(2).  No arguments other than a possible exception are given
-to the completion callback.
+异步函数 close(2)。  回调函数的参数是可能出现的异常。
 
 ## fs.closeSync(fd)
 
-Synchronous close(2). Returns `undefined`.
+同步函数 close(2). 返回 `undefined`.
 
 ## fs.createReadStream(path[, options])
 
@@ -387,7 +340,7 @@ If `options` is a string, then it specifies the encoding.
     Stability: 0 - Deprecated: Use [`fs.stat()`][] or [`fs.access()`][] instead.
 
 Test whether or not the given path exists by checking with the file system.
-Then call the `callback` argument with either true or false.  Example:
+Then call the `callback` argument with either true or false.  示例：
 
 ```js
 fs.exists('/etc/passwd', (exists) => {
@@ -622,7 +575,7 @@ Synchronous readdir(3). Returns an array of filenames excluding `'.'` and
   * `flag` {String} default = `'r'`
 * `callback` {Function}
 
-Asynchronously reads the entire contents of a file. Example:
+Asynchronously reads the entire contents of a file. 示例：
 
 ```js
 fs.readFile('/etc/passwd', (err, data) => {
@@ -636,7 +589,7 @@ contents of the file.
 
 If no encoding is specified, then the raw buffer is returned.
 
-If `options` is a string, then it specifies the encoding. Example:
+If `options` is a string, then it specifies the encoding. 示例：
 
 ```js
 fs.readFile('/etc/passwd', 'utf8', callback);
@@ -665,7 +618,7 @@ resolvedPath)`. May use `process.cwd` to resolve relative paths. `cache` is an
 object literal of mapped paths that can be used to force a specific path
 resolution or avoid additional `fs.stat` calls for known real paths.
 
-Example:
+示例：
 
 ```js
 var cache = {'/etc':'/private/etc'};
@@ -951,7 +904,7 @@ Asynchronously writes data to a file, replacing the file if it already exists.
 The `encoding` option is ignored if `data` is a buffer. It defaults
 to `'utf8'`.
 
-Example:
+示例：
 
 ```js
 fs.writeFile('message.txt', 'Hello Node.js', (err) => {
@@ -960,7 +913,7 @@ fs.writeFile('message.txt', 'Hello Node.js', (err) => {
 });
 ```
 
-If `options` is a string, then it specifies the encoding. Example:
+If `options` is a string, then it specifies the encoding. 示例：
 
 ```js
 fs.writeFile('message.txt', 'Hello Node.js', 'utf8', callback);
@@ -980,13 +933,13 @@ The synchronous version of [`fs.writeFile()`][]. Returns `undefined`.
 
 Synchronous versions of [`fs.write()`][]. Returns the number of bytes written.
 
-[`Buffer.byteLength`]: buffer.html#buffer_class_method_buffer_bytelength_string_encoding
-[`Buffer`]: buffer.html#buffer_buffer
+[`Buffer.byteLength`]: buffer.markdown#buffer_class_method_buffer_bytelength_string_encoding
+[`Buffer`]: buffer.markdown#buffer_buffer
 [Caveats]: #fs_caveats
 [`fs.access()`]: #fs_fs_access_path_mode_callback
 [`fs.accessSync()`]: #fs_fs_accesssync_path_mode
-[`fs.appendFile()`]: fs.html#fs_fs_appendfile_file_data_options_callback
-[`fs.exists()`]: fs.html#fs_fs_exists_path_callback
+[`fs.appendFile()`]: fs.markdown#fs_fs_appendfile_file_data_options_callback
+[`fs.exists()`]: fs.markdown#fs_fs_exists_path_callback
 [`fs.fstat()`]: #fs_fs_fstat_fd_callback
 [`fs.FSWatcher`]: #fs_class_fs_fswatcher
 [`fs.futimes()`]: #fs_fs_futimes_fd_atime_mtime_callback
@@ -1001,12 +954,12 @@ Synchronous versions of [`fs.write()`][]. Returns the number of bytes written.
 [`fs.watch()`]: #fs_fs_watch_filename_options_listener
 [`fs.write()`]: #fs_fs_write_fd_buffer_offset_length_position_callback
 [`fs.writeFile()`]: #fs_fs_writefile_file_data_options_callback
-[`net.Socket`]: net.html#net_class_net_socket
+[`net.Socket`]: net.markdown#net_class_net_socket
 [`ReadStream`]: #fs_class_fs_readstream
-[`stat()`]: fs.html#fs_fs_stat_path_callback
-[`util.inspect(stats)`]: util.html#util_util_inspect_object_options
+[`stat()`]: fs.markdown#fs_fs_stat_path_callback
+[`util.inspect(stats)`]: util.markdown#util_util_inspect_object_options
 [`WriteStream`]: #fs_class_fs_writestream
 [MDN-Date-getTime]: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/getTime
 [MDN-Date]: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date
-[Readable Stream]: stream.html#stream_class_stream_readable
-[Writable Stream]: stream.html#stream_class_stream_writable
+[Readable Stream]: stream.markdown#stream_class_stream_readable
+[Writable Stream]: stream.markdown#stream_class_stream_writable
