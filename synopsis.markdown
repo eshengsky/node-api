@@ -1,9 +1,8 @@
-# Synopsis
+# 概要
 
 <!--type=misc-->
 
-An example of a [web server][] written with Node.js which responds with
-`'Hello World'`:
+Node.js 写的一个 [web服务器][] 的例子，会返回 `'Hello World'` 作为响应：
 
 ```js
 const http = require('http');
@@ -16,14 +15,13 @@ http.createServer( (request, response) => {
 console.log('Server running at http://127.0.0.1:8124/');
 ```
 
-To run the server, put the code into a file called `example.js` and execute
-it with the node program
+要启动该服务器，将下面的代码放入一个名为 `example.js` 的文件中然后用 node 程序执行它：
 
 ```
 $ node example.js
 Server running at http://127.0.0.1:8124/
 ```
 
-All of the examples in the documentation can be run similarly.
+文档中的所有示例都可以类似地运行。
 
-[web server]: http.html
+[web服务器]: http.markdown
