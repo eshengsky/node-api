@@ -244,7 +244,7 @@ fs.appendFile('message.txt', 'data to append', 'utf8', callback);
 
 ## fs.chmodSync(path, mode)
 
-同步函数 chmod(2)。 返回 `undefined`.
+同步函数 chmod(2)。 返回 `undefined`。
 
 ## fs.chown(path, uid, gid, callback)
 
@@ -252,7 +252,7 @@ fs.appendFile('message.txt', 'data to append', 'utf8', callback);
 
 ## fs.chownSync(path, uid, gid)
 
-同步函数 chown(2)。 返回 `undefined`.
+同步函数 chown(2)。 返回 `undefined`。
 
 ## fs.close(fd, callback)
 
@@ -260,17 +260,15 @@ fs.appendFile('message.txt', 'data to append', 'utf8', callback);
 
 ## fs.closeSync(fd)
 
-同步函数 close(2). 返回 `undefined`.
+同步函数 close(2)。 返回 `undefined`。
 
 ## fs.createReadStream(path[, options])
 
-Returns a new [`ReadStream`][] object. (See [Readable Stream][]).
+返回 [`ReadStream`][] 对象。（参见 [Readable Stream][]）。
 
-Be aware that, unlike the default value set for `highWaterMark` on a
-readable stream (16 kb), the stream returned by this method has a
-default value of 64 kb for the same parameter.
+请注意，与 `highWaterMark` 在可读流上设置的默认值（16 kb）不同，这个方法返回的流默认值是 64 kb。
 
-`options` is an object or string with the following defaults:
+`options` 是一个对象或者字符串，其默认值如下：
 
 ```js
 {
@@ -282,37 +280,29 @@ default value of 64 kb for the same parameter.
 }
 ```
 
-`options` can include `start` and `end` values to read a range of bytes from
-the file instead of the entire file.  Both `start` and `end` are inclusive and
-start at 0. The `encoding` can be any one of those accepted by [`Buffer`][].
+`options` 可以包含 `start` 和 `end` 属性来读取文件的指定范围，而非整个文件。 `start` 和 `end` 要都在文件范围内，且从 0 开始，
+ `encoding` 可以是 [`Buffer`][] 认可的任意编码类型。
 
-If `fd` is specified, `ReadStream` will ignore the `path` argument and will use
-the specified file descriptor. This means that no `'open'` event will be emitted.
-Note that `fd` should be blocking; non-blocking `fd`s should be passed to
-[`net.Socket`][].
+如果指定了 `fd` 的值， `ReadStream` 将会忽略 `path` 参数而使用指定的文件描述符。 这意味着不会触发任何 `'open'` 事件。
+注意 `fd` 会被阻塞；非阻塞的 `fd` 应该传递给 [`net.Socket`][]。
 
-If `autoClose` is false, then the file descriptor won't be closed, even if
-there's an error.  It is your responsibility to close it and make sure
-there's no file descriptor leak.  If `autoClose` is set to true (default
-behavior), on `error` or `end` the file descriptor will be closed
-automatically.
+如果 `autoClose` 设为 false，即使发生错误文件也不会关闭，这就需要由你自己负责关闭，并确保没有文件泄露。如果 `autoClose` 设为 true （默认值），当遇到 `error` 或者 `end` 文件将会被自动关闭。
 
-`mode` sets the file mode (permission and sticky bits), but only if the
-file was created.
+`mode` 用来设置文件模式（权限和 sticky 位），但前提是文件已被创建。
 
-An example to read the last 10 bytes of a file which is 100 bytes long:
+这个例子会读取一个大小为 100 字节的文件的末尾 10 个字节：
 
 ```js
 fs.createReadStream('sample.txt', {start: 90, end: 99});
 ```
 
-If `options` is a string, then it specifies the encoding.
+如果 `options` 是字符串，则代表文件的编码。
 
 ## fs.createWriteStream(path[, options])
 
-Returns a new [`WriteStream`][] object. (See [Writable Stream][]).
+返回 [`WriteStream`][] 对象。（参见 [Writable Stream][]）。
 
-`options` is an object or string with the following defaults:
+`options` 是一个对象或者字符串，其默认值如下：
 
 ```js
 {
@@ -323,24 +313,18 @@ Returns a new [`WriteStream`][] object. (See [Writable Stream][]).
 }
 ```
 
-`options` may also include a `start` option to allow writing data at
-some position past the beginning of the file.  Modifying a file rather
-than replacing it may require a `flags` mode of `r+` rather than the
-default mode `w`. The `defaultEncoding` can be any one of those accepted by [`Buffer`][].
+`options` 可以包含 `start` 属性来从指定的位置开始写入文件。 如果想修改文件而不是替换文件，需要将 `flags` 的模式指定为 `r+` 而不是默认的 `w`。 `defaultEncoding` 可以是 [`Buffer`][] 认可的任意编码类型。
 
-Like [`ReadStream`][], if `fd` is specified, `WriteStream` will ignore the
-`path` argument and will use the specified file descriptor. This means that no
-`'open'` event will be emitted. Note that `fd` should be blocking; non-blocking
-`fd`s should be passed to [`net.Socket`][].
+和 [`ReadStream`][] 类似，如果指定了 `fd` 的值， `WriteStream` 将会忽略 `path` 参数而使用指定的文件描述符。这意味着不会触发任何 `'open'` 事件。
+注意 `fd` 会被阻塞；非阻塞的 `fd` 应该传递给 [`net.Socket`][]。
 
-If `options` is a string, then it specifies the encoding.
+如果 `options` 是字符串，则代表文件的编码。
 
 ## fs.exists(path, callback)
 
-    Stability: 0 - Deprecated: Use [`fs.stat()`][] or [`fs.access()`][] instead.
+    稳定性： 0 - 弃用：请使用 [`fs.stat()`][] 或 [`fs.access()`][]。
 
-Test whether or not the given path exists by checking with the file system.
-Then call the `callback` argument with either true or false.  示例：
+通过检查文件系统判断给定的文件是否存在，通过回调函数 `callback` 的参数给出 true 或 false。  示例：
 
 ```js
 fs.exists('/etc/passwd', (exists) => {
@@ -348,234 +332,193 @@ fs.exists('/etc/passwd', (exists) => {
 });
 ```
 
-`fs.exists()` should not be used to check if a file exists before calling
-`fs.open()`. Doing so introduces a race condition since other processes may
-change the file's state between the two calls. Instead, user code should
-call `fs.open()` directly and handle the error raised if the file is
-non-existent.
+`fs.exists()` 不应该在调用 `fs.open()` 之前检查文件是否存在，因为在2个方法的调用间隙其它进程有可能改变了文件状态，从而引发操作风险。
+因此，你应该直接调用 `fs.open()`，并根据回调函数是否有错来判断文件是否存在。
 
 ## fs.existsSync(path)
 
-    Stability: 0 - Deprecated: Use [`fs.statSync()`][] or [`fs.accessSync()`][] instead.
+    稳定性： 0 - 弃用： 请使用 [`fs.statSync()`][] 或 [`fs.accessSync()`][]。
 
-Synchronous version of [`fs.exists()`][].
-Returns `true` if the file exists, `false` otherwise.
+[`fs.exists()`][] 的同步版本。
+如果文件存在返回 `true`，否则返回 `false`。
 
 ## fs.fchmod(fd, mode, callback)
 
-Asynchronous fchmod(2). No arguments other than a possible exception
-are given to the completion callback.
+异步函数 fchmod(2) 。回调函数的参数是可能出现的异常。
 
 ## fs.fchmodSync(fd, mode)
 
-Synchronous fchmod(2). Returns `undefined`.
+同步函数 fchmod(2)。返回 `undefined`。
 
 ## fs.fchown(fd, uid, gid, callback)
 
-Asynchronous fchown(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 fchown(2) 。回调函数的参数是可能出现的异常。
 
 ## fs.fchownSync(fd, uid, gid)
 
-Synchronous fchown(2). Returns `undefined`.
+同步函数 fchown(2)。返回 `undefined`。
 
 ## fs.fdatasync(fd, callback)
 
-Asynchronous fdatasync(2). No arguments other than a possible exception are
-given to the completion callback.
+异步函数 fdatasync(2) 。回调函数的参数是可能出现的异常。
 
 ## fs.fdatasyncSync(fd)
 
-Synchronous fdatasync(2). Returns `undefined`.
+同步函数 fdatasync(2)。返回 `undefined`。
 
 ## fs.fstat(fd, callback)
 
-Asynchronous fstat(2). The callback gets two arguments `(err, stats)` where
-`stats` is a `fs.Stats` object. `fstat()` is identical to [`stat()`][], except that
-the file to be stat-ed is specified by the file descriptor `fd`.
+异步函数 fstat(2)。回调函数有2个参数 `(err, stats)`，`stats` 是 `fs.Stats` 对象。除了文件是使用文件描述符 `fd` 指定的这一区别外，其它都与 [`stat()`][] 一样。
 
 ## fs.fstatSync(fd)
 
-Synchronous fstat(2). Returns an instance of `fs.Stats`.
+同步函数 fstat(2)。返回 `fs.Stats` 实例。
 
 ## fs.fsync(fd, callback)
 
-Asynchronous fsync(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 fsync(2)。回调函数的参数是可能出现的异常。
 
 ## fs.fsyncSync(fd)
 
-Synchronous fsync(2). Returns `undefined`.
+同步函数 fsync(2)。返回 `undefined`。
 
 ## fs.ftruncate(fd, len, callback)
 
-Asynchronous ftruncate(2). No arguments other than a possible exception are
-given to the completion callback.
+异步函数 ftruncate(2)。回调函数的参数是可能出现的异常。
 
 ## fs.ftruncateSync(fd, len)
 
-Synchronous ftruncate(2). Returns `undefined`.
+同步函数 ftruncate(2) 。返回 `undefined`。
 
 ## fs.futimes(fd, atime, mtime, callback)
 
-Change the file timestamps of a file referenced by the supplied file
-descriptor.
+修改传入的文件描述符所指向文件的时间戳。
 
 ## fs.futimesSync(fd, atime, mtime)
 
-Synchronous version of [`fs.futimes()`][]. Returns `undefined`.
+[`fs.futimes()`][] 的同步版本。 返回 `undefined`。
 
 ## fs.lchmod(path, mode, callback)
 
-Asynchronous lchmod(2). No arguments other than a possible exception
-are given to the completion callback.
+异步函数 lchmod(2)。回调函数的参数是可能出现的异常。
 
-Only available on Mac OS X.
+仅 Mac OS X 可用。
 
 ## fs.lchmodSync(path, mode)
 
-Synchronous lchmod(2). Returns `undefined`.
+同步函数 lchmod(2)。返回 `undefined`。
 
 ## fs.lchown(path, uid, gid, callback)
 
-Asynchronous lchown(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 lchown(2)。回调函数的参数是可能出现的异常。
 
 ## fs.lchownSync(path, uid, gid)
 
-Synchronous lchown(2). Returns `undefined`.
+同步函数 lchown(2)。返回 `undefined`。
 
 ## fs.link(srcpath, dstpath, callback)
 
-Asynchronous link(2). No arguments other than a possible exception are given to
-the completion callback.
+异步函数 link(2)。回调函数的参数是可能出现的异常。
 
 ## fs.linkSync(srcpath, dstpath)
 
-Synchronous link(2). Returns `undefined`.
+同步函数 link(2)。返回 `undefined`。
 
 ## fs.lstat(path, callback)
 
-Asynchronous lstat(2). The callback gets two arguments `(err, stats)` where
-`stats` is a `fs.Stats` object. `lstat()` is identical to `stat()`, except that if
-`path` is a symbolic link, then the link itself is stat-ed, not the file that it
-refers to.
+异步函数 lstat(2)。回调函数有2个参数 `(err, stats)`，`stats` 是 `fs.Stats` 对象。如果 `path` 是符号链接，读取的是链接本身而非它所链接到的文件。除吃之外，其它都与 `stat()` 一样。
 
 ## fs.lstatSync(path)
 
-Synchronous lstat(2). Returns an instance of `fs.Stats`.
+同步函数 lstat(2)。返回 `fs.Stats` 的实例。
 
 ## fs.mkdir(path[, mode], callback)
 
-Asynchronous mkdir(2). No arguments other than a possible exception are given
-to the completion callback. `mode` defaults to `0o777`.
+异步函数 mkdir(2)。回调函数的参数是可能出现的异常。 `mode` 默认值 `0o777`。
 
 ## fs.mkdirSync(path[, mode])
 
-Synchronous mkdir(2). Returns `undefined`.
+异步函数 mkdir(2)。返回 `undefined`。
 
 ## fs.open(path, flags[, mode], callback)
 
-Asynchronous file open. See open(2). `flags` can be:
+异步打开文件。参见 open(2)。 `flags` 可能的值：
 
-* `'r'` - Open file for reading.
-An exception occurs if the file does not exist.
+* `'r'` - 以只读模式打开文件。
+如果文件不存在则抛出异常。
 
-* `'r+'` - Open file for reading and writing.
-An exception occurs if the file does not exist.
+* `'r+'` - 以读写模式打开文件。
+如果文件不存在则抛出异常。
 
-* `'rs'` - Open file for reading in synchronous mode. Instructs the operating
-  system to bypass the local file system cache.
+* `'rs'` - 以同步只读模式打开文件。命令操作系统忽略本地文件系统缓存。这个功能主要用于打开 NFS 上的文件，它允许你跳过可能过去的本地缓存。这对 I/O 性能有真实的影响，如果你并不需要请不要使用它。
 
-  This is primarily useful for opening files on NFS mounts as it allows you to
-  skip the potentially stale local cache. It has a very real impact on I/O
-  performance so don't use this flag unless you need it.
+注意这并没有将 `fs.open()` 变成一个同步阻塞的调用。如果你想要同步请求你应该使用 `fs.openSync()`。
 
-  Note that this doesn't turn `fs.open()` into a synchronous blocking call.
-  If that's what you want then you should be using `fs.openSync()`
+* `'rs+'` - 以同步读写模式打开文件。注意事项请查看 `'rs'`。
 
-* `'rs+'` - Open file for reading and writing, telling the OS to open it
-  synchronously. See notes for `'rs'` about using this with caution.
+* `'w'` - 以只写模式打开文件。如果文件不存在则会自动创建，如果文件存在则会覆盖。
 
-* `'w'` - Open file for writing.
-The file is created (if it does not exist) or truncated (if it exists).
+* `'wx'` - 类似 `'w'`，但如果 `path` 存在则会失败。
 
-* `'wx'` - Like `'w'` but fails if `path` exists.
+* `'w+'` - 以读写模式打开文件。如果文件不存在则会自动创建，如果文件存在则会覆盖。
 
-* `'w+'` - Open file for reading and writing.
-The file is created (if it does not exist) or truncated (if it exists).
+* `'wx+'` - 类似 `'w+'`，但如果 `path` 存在则会失败。
 
-* `'wx+'` - Like `'w+'` but fails if `path` exists.
+* `'a'` - 以追加模式打开文件。如果文件不存在则会自动创建。
 
-* `'a'` - Open file for appending.
-The file is created if it does not exist.
+* `'ax'` - 类似 `'a'`，但如果 `path` 存在则会失败。
 
-* `'ax'` - Like `'a'` but fails if `path` exists.
+* `'a+'` - 以只读追加模式打开文件。如果文件不存在则会自动创建。
 
-* `'a+'` - Open file for reading and appending.
-The file is created if it does not exist.
+* `'ax+'` - 类似 `'a+'`，但如果 `path` 存在则会失败。
 
-* `'ax+'` - Like `'a+'` but fails if `path` exists.
+`mode` 用来设置文件模式（权限和 sticky 位），但前提是文件已被创建。默认值是 `0666`，可读写。
 
-`mode` sets the file mode (permission and sticky bits), but only if the file was
-created. It defaults to `0666`, readable and writable.
+回调函数有2个参数 `(err, fd)`。
 
-The callback gets two arguments `(err, fd)`.
+排除标记 `'x'` (open(2) 中的 `O_EXCL` 标记) 保证了 `path` 是新创建的。在 POSIX 系统中，即使符号链接指向了一个不存在的文件，`path` 也被认为是存在的。排除标记在网络文件系统中作用情况无法确定。
 
-The exclusive flag `'x'` (`O_EXCL` flag in open(2)) ensures that `path` is newly
-created. On POSIX systems, `path` is considered to exist even if it is a symlink
-to a non-existent file. The exclusive flag may or may not work with network file
-systems.
+`flags` 也可以是 open(2) 给的数字。常用的常数可以通过 `require('constants')` 获得。在 Windows 操作系统下，flag 会被转换成一个对应值，例如： `O_WRONLY` 转换成 `FILE_GENERIC_WRITE`，
+ `O_EXCL|O_CREAT` 转换成 `CREATE_NEW`，作为 CreateFileW 可以接收的值。
 
-`flags` can also be a number as documented by open(2); commonly used constants
-are available from `require('constants')`.  On Windows, flags are translated to
-their equivalent ones where applicable, e.g. `O_WRONLY` to `FILE_GENERIC_WRITE`,
-or `O_EXCL|O_CREAT` to `CREATE_NEW`, as accepted by CreateFileW.
-
-On Linux, positional writes don't work when the file is opened in append mode.
-The kernel ignores the position argument and always appends the data to
-the end of the file.
+在 Linux 系统下，以追加模式打开的文件不支持指定位置写入。系统内核会忽略位置参数，而总是将数据写到文件的末尾。
 
 ## fs.openSync(path, flags[, mode])
 
-Synchronous version of [`fs.open()`][]. Returns an integer representing the file
-descriptor.
+[`fs.open()`][] 的异步版本。返回一个表示文件描述符的整数。
 
 ## fs.read(fd, buffer, offset, length, position, callback)
 
-Read data from the file specified by `fd`.
+读取 `fd` 指定文件的数据。
 
-`buffer` is the buffer that the data will be written to.
+`buffer` 数据将会写入的缓冲区。
 
-`offset` is the offset in the buffer to start writing at.
+`offset` 开始写入时缓冲区起始位置的偏移量。
 
-`length` is an integer specifying the number of bytes to read.
+`length` 要读取的文件的长度。
 
-`position` is an integer specifying where to begin reading from in the file.
-If `position` is `null`, data will be read from the current file position.
+`position` 读取文件时的起始位置，如果 `position` 是 `null`，将会从当前的文件位置读起。
 
-The callback is given the three arguments, `(err, bytesRead, buffer)`.
+回调函数有3个参数 `(err, bytesRead, buffer)`。
 
 ## fs.readdir(path, callback)
 
-Asynchronous readdir(3).  Reads the contents of a directory.
-The callback gets two arguments `(err, files)` where `files` is an array of
-the names of the files in the directory excluding `'.'` and `'..'`.
+异步函数 readdir(3)。读取文件夹的内容。
+回调函数有2个参数 `(err, files)` ， `files` 是文件夹内所有文件的文件名的数组，但排除了文件名包含 `'.'` 和 `'..'` 的文件。
 
 ## fs.readdirSync(path)
 
-Synchronous readdir(3). Returns an array of filenames excluding `'.'` and
-`'..'`.
+同步函数 readdir(3)。返回一个排除了 `'.'` 和 `'..'` 的文件名的数组。
 
 ## fs.readFile(file[, options], callback)
 
-* `file` {String} filename
+* `file` {String} 文件名
 * `options` {Object | String}
-  * `encoding` {String | Null} default = `null`
-  * `flag` {String} default = `'r'`
+  * `encoding` {String | Null} 默认值 = `null`
+  * `flag` {String} 默认值 = `'r'`
 * `callback` {Function}
 
-Asynchronously reads the entire contents of a file. 示例：
+异步读取整个文件的内容。 示例：
 
 ```js
 fs.readFile('/etc/passwd', (err, data) => {
@@ -584,12 +527,11 @@ fs.readFile('/etc/passwd', (err, data) => {
 });
 ```
 
-The callback is passed two arguments `(err, data)`, where `data` is the
-contents of the file.
+回调函数传递了2个参数 `(err, data)`， `data` 是文件的内容。
 
-If no encoding is specified, then the raw buffer is returned.
+如果没有指定文件编码，则返回一个原生 buffer。
 
-If `options` is a string, then it specifies the encoding. 示例：
+如果 `options` 是一个字符串，则代表文件编码。 示例：
 
 ```js
 fs.readFile('/etc/passwd', 'utf8', callback);
@@ -597,26 +539,23 @@ fs.readFile('/etc/passwd', 'utf8', callback);
 
 ## fs.readFileSync(file[, options])
 
-Synchronous version of [`fs.readFile`][]. Returns the contents of the `file`.
+[`fs.readFile`][] 的同步版本。返回文件 `file` 的内容。
 
-If the `encoding` option is specified then this function returns a
-string. Otherwise it returns a buffer.
+如果指定了 `encoding` 则返回一个字符串，否则返回一个 buffer。
 
 ## fs.readlink(path, callback)
 
-Asynchronous readlink(2). The callback gets two arguments `(err,
-linkString)`.
+异步函数 readlink(2)。回调函数有2个参数 `(err,
+linkString)`。
 
 ## fs.readlinkSync(path)
 
-Synchronous readlink(2). Returns the symbolic link's string value.
+同步函数 readlink(2)。返回符号链接的字符串值。
 
 ## fs.realpath(path[, cache], callback)
 
-Asynchronous realpath(2). The `callback` gets two arguments `(err,
-resolvedPath)`. May use `process.cwd` to resolve relative paths. `cache` is an
-object literal of mapped paths that can be used to force a specific path
-resolution or avoid additional `fs.stat` calls for known real paths.
+异步函数 realpath(2)。 回调函数 `callback` 有2个参数 `(err, resolvedPath)`。可以使用 `process.cwd` 来解决相对路径问题。
+`cache` 是一个映射路径的对象字面量，可以用来强制指定路径方案或者避免对已知的真实路径调用 `fs.stat` 。
 
 示例：
 
@@ -630,279 +569,213 @@ fs.realpath('/etc/passwd', cache, (err, resolvedPath) => {
 
 ## fs.readSync(fd, buffer, offset, length, position)
 
-Synchronous version of [`fs.read()`][]. Returns the number of `bytesRead`.
+[`fs.read()`][] 的同步版本。返回 `bytesRead` 的数值。
 
 ## fs.realpathSync(path[, cache])
 
-Synchronous realpath(2). Returns the resolved path. `cache` is an
-object literal of mapped paths that can be used to force a specific path
-resolution or avoid additional `fs.stat` calls for known real paths.
+同步函数 realpath(2)。返回解析后的路径。`cache` 是一个映射路径的对象字面量，可以用来强制指定路径方案或者避免对已知的真实路径调用 `fs.stat` 。
 
 ## fs.rename(oldPath, newPath, callback)
 
-Asynchronous rename(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 rename(2)。回调函数的参数是可能出现的异常。
 
 ## fs.renameSync(oldPath, newPath)
 
-Synchronous rename(2). Returns `undefined`.
+同步函数 rename(2)。返回 `undefined`。
 
 ## fs.rmdir(path, callback)
 
-Asynchronous rmdir(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 rmdir(2)。回调函数的参数是可能出现的异常。
 
 ## fs.rmdirSync(path)
 
-Synchronous rmdir(2). Returns `undefined`.
+同步函数 rmdir(2)。返回 `undefined`。
 
 ## fs.stat(path, callback)
 
-Asynchronous stat(2). The callback gets two arguments `(err, stats)` where
-`stats` is a [`fs.Stats`][] object.  See the [`fs.Stats`][] section for more
-information.
+异步函数 stat(2)。回调函数有2个参数 `(err, stats)` ，
+`stats` 是 [`fs.Stats`][] 对象。更多内容参见 [`fs.Stats`][] 。
 
 ## fs.statSync(path)
 
-Synchronous stat(2). Returns an instance of [`fs.Stats`][].
+同步函数 stat(2)。返回 [`fs.Stats`][] 的实例。
 
 ## fs.symlink(target, path[, type], callback)
 
-Asynchronous symlink(2). No arguments other than a possible exception are given
-to the completion callback.
-The `type` argument can be set to `'dir'`, `'file'`, or `'junction'` (default
-is `'file'`) and is only available on Windows (ignored on other platforms).
-Note that Windows junction points require the destination path to be absolute.  When using
-`'junction'`, the `target` argument will automatically be normalized to absolute path.
+异步函数 symlink(2)。回调函数的参数是可能出现的异常。
+参数 `type` 可以设置为 `'dir'`， `'file'`， 或者 `'junction'` （默认值为 `'file'`），且仅在 Windows 下有效。
+请注意 Windows 交接点（junction points）需要目标路径是绝对路径。当使用 `'junction'`，参数 `target` 会被自动转换成绝对路径。
 
-Here is an example below:
+这是一个示例：
 
 ```js
 fs.symlink('./foo', './new-port');
 ```
 
-It creates a symbolic link named "new-port" that points to "foo".
+这会创建一个名为 "new-port" 的符号链接并指向 "foo"。
 
 ## fs.symlinkSync(target, path[, type])
 
-Synchronous symlink(2). Returns `undefined`.
+同步函数 symlink(2)。返回 `undefined`。
 
 ## fs.truncate(path, len, callback)
 
-Asynchronous truncate(2). No arguments other than a possible exception are
-given to the completion callback. A file descriptor can also be passed as the
-first argument. In this case, `fs.ftruncate()` is called.
+异步函数 truncate(2)。回调函数的参数是可能出现的异常。文件描述符也可以用作第一个参数，这种情况下，会调用 `fs.ftruncate()` 。
 
 ## fs.truncateSync(path, len)
 
-Synchronous truncate(2). Returns `undefined`.
+同步函数 truncate(2)。返回 `undefined`。
 
 ## fs.unlink(path, callback)
 
-Asynchronous unlink(2). No arguments other than a possible exception are given
-to the completion callback.
+异步函数 unlink(2)。回调函数的参数是可能出现的异常。
 
 ## fs.unlinkSync(path)
 
-Synchronous unlink(2). Returns `undefined`.
+同步函数 unlink(2)。返回 `undefined`。
 
 ## fs.unwatchFile(filename[, listener])
 
-Stop watching for changes on `filename`. If `listener` is specified, only that
-particular listener is removed. Otherwise, *all* listeners are removed and you
-have effectively stopped watching `filename`.
+停止监视 `filename` 文件的变化。 如果指定了 `listener` ，只会移除该 `listener`，否则 *所有* listeners 都会被移除并停止监视 `filename`。
 
-Calling `fs.unwatchFile()` with a filename that is not being watched is a
-no-op, not an error.
+调用 `fs.unwatchFile()` 如果传入的 `filename` 没有被监视，则属于一个空操作，不会导致错误。
 
-_Note: [`fs.watch()`][] is more efficient than `fs.watchFile()` and `fs.unwatchFile()`.
-`fs.watch()` should be used instead of `fs.watchFile()` and `fs.unwatchFile()`
-when possible._
+_提示： [`fs.watch()`][] 比 `fs.watchFile()` 和 `fs.unwatchFile()` 更加高效。
+应该尽可能使用 `fs.watch()` 来替代 `fs.watchFile()` 和 `fs.unwatchFile()` 。_
 
 ## fs.utimes(path, atime, mtime, callback)
 
-Change file timestamps of the file referenced by the supplied path.
+改变指定路径的文件的时间戳。
 
-Note: the arguments `atime` and `mtime` of the following related functions does
-follow the below rules:
+说明：参数 `atime` 和 `mtime` 的相关功能遵循如下规则：
 
-- If the value is a numberable string like `'123456789'`, the value would get
-  converted to corresponding number.
-- If the value is `NaN` or `Infinity`, the value would get converted to
-  `Date.now()`.
+- 如果值是一个数字型的字符串如 `'123456789'`，则值会被转换成对应的数字。
+- 如果值是 `NaN` （Not a Number，非数字） 或者 `Infinity` （无限大）, 值会被转换成 `Date.now()`。
 
 ## fs.utimesSync(path, atime, mtime)
 
-Synchronous version of [`fs.utimes()`][]. Returns `undefined`.
+[`fs.utimes()`][] 的同步版本。返回 `undefined`。
 
 ## fs.watch(filename[, options][, listener])
 
-Watch for changes on `filename`, where `filename` is either a file or a
-directory.  The returned object is a [`fs.FSWatcher`][].
+监视 `filename` 的改变，指定的 `filename` 可以是文件或文件夹。返回的对象类型是 [`fs.FSWatcher`][]。
 
-The second argument is optional. The `options` if provided should be an object.
-The supported boolean members are `persistent` and `recursive`. `persistent`
-indicates whether the process should continue to run as long as files are being
-watched. `recursive` indicates whether all subdirectories should be watched, or
-only the current directory. This applies when a directory is specified, and only
-on supported platforms (See [Caveats][]).
+第2个参数 `options` 是可选的，且必须是一个对象。它有2个 boolean 类型的属性 `persistent` 和 `recursive`。 `persistent` 指定当文件被监视时进程是否继续运行。 `recursive` 指定是否要监视所有的子文件夹，还是仅仅监视当前文件夹。这个参数仅对文件夹及支持的系统中有效（参见 [注意事项][]）。
 
-The default is `{ persistent: true, recursive: false }`.
+默认值是 `{ persistent: true, recursive: false }`。
 
-The listener callback gets two arguments `(event, filename)`.  `event` is either
-`'rename'` or `'change'`, and `filename` is the name of the file which triggered
-the event.
+回调函数有2个参数 `(event, filename)`，  `event` 是 `'rename'` 或者 `'change'`， `filename` 是触发了事件的文件名。
 
-### Caveats
+### 注意事项
 
 <!--type=misc-->
 
-The `fs.watch` API is not 100% consistent across platforms, and is
-unavailable in some situations.
+`fs.watch` API 并非 100% 跨平台兼容，且在某些情况下不可用。
 
-The recursive option is only supported on OS X and Windows.
+`recursive` 参数仅在 OS X 和 Windows 下有效。
 
-#### Availability
-
-<!--type=misc-->
-
-This feature depends on the underlying operating system providing a way
-to be notified of filesystem changes.
-
-* On Linux systems, this uses `inotify`.
-* On BSD systems, this uses `kqueue`.
-* On OS X, this uses `kqueue` for files and 'FSEvents' for directories.
-* On SunOS systems (including Solaris and SmartOS), this uses `event ports`.
-* On Windows systems, this feature depends on `ReadDirectoryChangesW`.
-
-If the underlying functionality is not available for some reason, then
-`fs.watch` will not be able to function.  For example, watching files or
-directories on network file systems (NFS, SMB, etc.) often doesn't work
-reliably or at all.
-
-You can still use `fs.watchFile`, which uses stat polling, but it is slower and
-less reliable.
-
-#### Filename Argument
+#### 可用性
 
 <!--type=misc-->
 
-Providing `filename` argument in the callback is only supported on Linux and
-Windows.  Even on supported platforms, `filename` is not always guaranteed to
-be provided. Therefore, don't assume that `filename` argument is always
-provided in the callback, and have some fallback logic if it is null.
+该功能依赖于底层操作系统提供文件系统变动通知。
+
+* 在 Linux 系统，会使用 `inotify`。
+* 在 BSD 系统， 会使用 `kqueue`。
+* 在 OS X系统， 对文件会使用 `kqueue` ，对文件夹会使用 'FSEvents' 。
+* 在 SunOS 系统，（包括 Solaris 和 SmartOS），会使用 `event ports`。
+* 在 Windows 系统， 依赖于 `ReadDirectoryChangesW`。
+
+如果底层系统函数因某些原因不可用，那么 `fs.watch` 将无法正常工作。例如，监视网络文件系统（NFS， SMB等）中文件或文件夹的变动往往是不可靠的。
+
+你仍然可以使用 `fs.watchFile`，它使用了统计调查，但速度很慢且可靠性不佳。
+
+#### 文件名参数
+
+<!--type=misc-->
+
+回调函数仅在 Linux 和 Windows 平台下才会提供 `filename` 参数。即使在支持的平台， `filename` 也不能完全确保提供。因此，不要去假设 `filename` 参数一定会有，需要有 `filename` 为 null 的逻辑判断。
 
 ```js
 fs.watch('somedir', (event, filename) => {
   console.log(`event is: ${event}`);
   if (filename) {
-    console.log(`filename provided: ${filename}`);
+    console.log(`提供了文件名：${filename}`);
   } else {
-    console.log('filename not provided');
+    console.log('未提供文件名');
   }
 });
 ```
 
 ## fs.watchFile(filename[, options], listener)
 
-Watch for changes on `filename`. The callback `listener` will be called each
-time the file is accessed.
+监视 `filename` 文件的变化。文件每次被访问都会调用 `listener` 。
 
-The `options` argument may be omitted. If provided, it should be an object. The
-`options` object may contain a boolean named `persistent` that indicates
-whether the process should continue to run as long as files are being watched.
-The `options` object may specify an `interval` property indicating how often the
-target should be polled in milliseconds. The default is
-`{ persistent: true, interval: 5007 }`.
+参数 `options` 是可选的。如果提供了必须是一个对象。`options` 有一个 boolean 类型的属性 `persistent` ，指定当文件被监视时进程是否继续运行。 `options` 对象还可以指定一个 `interval` 属性，代表目标文件被检测的频率，单位是毫秒。`options` 的默认值是 `{ persistent: true, interval: 5007 }`。
 
-The `listener` gets two arguments the current stat object and the previous
-stat object:
+`listener` 有两个参数，第一个是当前的文件统计对象，第二个是上一次的统计对象。
 
 ```js
 fs.watchFile('message.text', (curr, prev) => {
-  console.log(`the current mtime is: ${curr.mtime}`);
-  console.log(`the previous mtime was: ${prev.mtime}`);
+  console.log(`当前的 mtime 是：${curr.mtime}`);
+  console.log(`上一次的 mtime 是：${prev.mtime}`);
 });
 ```
 
-These stat objects are instances of `fs.Stat`.
+这些统计对象都是 `fs.Stat` 类型。
 
-If you want to be notified when the file was modified, not just accessed,
-you need to compare `curr.mtime` and `prev.mtime`.
+如果想在文件被修改时得到通知，而不是被访问时就通知，那么就需要比较 `curr.mtime` 和 `prev.mtime`。
 
-_Note: when an `fs.watchFile` operation results in an `ENOENT` error, it will
- invoke the listener once, with all the fields zeroed (or, for dates, the Unix
- Epoch). In Windows, `blksize` and `blocks` fields will be `undefined`, instead
- of zero. If the file is created later on, the listener will be called again,
- with the latest stat objects. This is a change in functionality since v0.10._
+_注意：当一个 `fs.watchFile` 操作引起了 `ENOENT` 错误，会调用 `listener` 一次，所有字段都为 0 （对于日期就是 Unix
+ Epoch）。在 Windows 下， `blksize` 和 `blocks` 字段将是 `undefined`而非 0. 如果文件在后来被创建，listener 会再次被调用，并传入最新的统计对象。这是自 v0.10 开始的功能变化。_
 
-_Note: [`fs.watch()`][] is more efficient than `fs.watchFile` and `fs.unwatchFile`.
-`fs.watch` should be used instead of `fs.watchFile` and `fs.unwatchFile`
-when possible._
+_提示： [`fs.watch()`][] 比 `fs.watchFile` 和 `fs.unwatchFile` 更加高效。应该尽可能使用
+`fs.watch` 来替代 `fs.watchFile` 和 `fs.unwatchFile` 。_
 
 ## fs.write(fd, buffer, offset, length[, position], callback)
 
-Write `buffer` to the file specified by `fd`.
+将 `buffer` 写入 `fd` 指定的文件中。
 
-`offset` and `length` determine the part of the buffer to be written.
+`offset` 和 `length` 用来确定要写入哪部分的缓冲区。
 
-`position` refers to the offset from the beginning of the file where this data
-should be written. If `typeof position !== 'number'`, the data will be written
-at the current position. See pwrite(2).
+`position` 指文件写入的起始位置，如果 `typeof position !== 'number'`（不是一个数字），则会从当前位置开始写入。参见 pwrite(2)。
 
-The callback will be given three arguments `(err, written, buffer)` where
-`written` specifies how many _bytes_ were written from `buffer`.
+回调函数有3个参数 `(err, written, buffer)` ，`written` 表示 `buffer` 中已经写入了多少_字节_。
 
-Note that it is unsafe to use `fs.write` multiple times on the same file
-without waiting for the callback. For this scenario,
-`fs.createWriteStream` is strongly recommended.
+注意，在回调函数还没执行前就对同一个文件多次使用 `fs.write` 是不安全的。对这种场景，强烈推荐使用 `fs.createWriteStream` 。
 
-On Linux, positional writes don't work when the file is opened in append mode.
-The kernel ignores the position argument and always appends the data to
-the end of the file.
+在 Linux 系统下，以追加模式打开的文件不支持指定位置写入。系统内核会忽略位置参数，而总是将数据写到文件的末尾。
 
 ## fs.write(fd, data[, position[, encoding]], callback)
 
-Write `data` to the file specified by `fd`.  If `data` is not a Buffer instance
-then the value will be coerced to a string.
+将 `data` 写入 `fd` 指定文件中。如果 `data` 不是 Buffer 实例，会被强制转为字符串。
 
-`position` refers to the offset from the beginning of the file where this data
-should be written. If `typeof position !== 'number'` the data will be written at
-the current position. See pwrite(2).
+`position` 指文件写入的起始位置，如果 `typeof position !== 'number'`（不是一个数字），则会从当前位置开始写入。参见 pwrite(2)。
 
-`encoding` is the expected string encoding.
+`encoding` 预期的字符串编码。
 
-The callback will receive the arguments `(err, written, string)` where `written`
-specifies how many _bytes_ the passed string required to be written. Note that
-bytes written is not the same as string characters. See [`Buffer.byteLength`][].
+回调函数有3个参数 `(err, written, string)` ， `written` 表示已经写入了多少_字节_。注意字节与字符是不同的，参见 [`Buffer.byteLength`][]。
 
-Unlike when writing `buffer`, the entire string must be written. No substring
-may be specified. This is because the byte offset of the resulting data may not
-be the same as the string offset.
+与写入 `buffer` 不同，字符串只能整个写入，不支持截取部分写入。这是因为返回的字节的偏移量和字符串的偏移量是不同的。
 
-Note that it is unsafe to use `fs.write` multiple times on the same file
-without waiting for the callback. For this scenario,
-`fs.createWriteStream` is strongly recommended.
+注意，在回调函数还没执行前就对同一个文件多次使用 `fs.write` 是不安全的。对这种场景，强烈推荐使用 `fs.createWriteStream` 。
 
-On Linux, positional writes don't work when the file is opened in append mode.
-The kernel ignores the position argument and always appends the data to
-the end of the file.
+在 Linux 系统下，以追加模式打开的文件不支持指定位置写入。系统内核会忽略位置参数，而总是将数据写到文件的末尾。
 
 ## fs.writeFile(file, data[, options], callback)
 
-* `file` {String} filename
+* `file` {String} 文件名
 * `data` {String | Buffer}
 * `options` {Object | String}
-  * `encoding` {String | Null} default = `'utf8'`
-  * `mode` {Number} default = `0o666`
-  * `flag` {String} default = `'w'`
+  * `encoding` {String | Null} 默认值 = `'utf8'`
+  * `mode` {Number} 默认值 = `0o666`
+  * `flag` {String} 默认值 = `'w'`
 * `callback` {Function}
 
-Asynchronously writes data to a file, replacing the file if it already exists.
-`data` can be a string or a buffer.
+异步地给文件写入数据，如果文件已存在则会覆盖。
+`data` 可以是字符串或缓冲区。
 
-The `encoding` option is ignored if `data` is a buffer. It defaults
-to `'utf8'`.
+ 如果 `data` 是缓冲区，则 `encoding` 选项会被忽略。`encoding`  的默认值是 `'utf8'`。
 
 示例：
 
@@ -913,52 +786,50 @@ fs.writeFile('message.txt', 'Hello Node.js', (err) => {
 });
 ```
 
-If `options` is a string, then it specifies the encoding. 示例：
+如果 `options` 是字符串，则表示编码格式。 示例：
 
 ```js
 fs.writeFile('message.txt', 'Hello Node.js', 'utf8', callback);
 ```
 
-Note that it is unsafe to use `fs.writeFile` multiple times on the same file
-without waiting for the callback. For this scenario,
-`fs.createWriteStream` is strongly recommended.
+注意，在回调函数还没执行前就对同一个文件多次使用 `fs.writeFile` 是不安全的。对这种场景，强烈推荐使用 `fs.createWriteStream` 。
 
 ## fs.writeFileSync(file, data[, options])
 
-The synchronous version of [`fs.writeFile()`][]. Returns `undefined`.
+[`fs.writeFile()`][] 的同步版本。返回 `undefined`。
 
 ## fs.writeSync(fd, buffer, offset, length[, position])
 
 ## fs.writeSync(fd, data[, position[, encoding]])
 
-Synchronous versions of [`fs.write()`][]. Returns the number of bytes written.
+[`fs.write()`][] 的同步版本。返回写入的字节数。
 
 [`Buffer.byteLength`]: buffer.markdown#buffer_class_method_buffer_bytelength_string_encoding
 [`Buffer`]: buffer.markdown#buffer_buffer
-[Caveats]: #fs_caveats
-[`fs.access()`]: #fs_fs_access_path_mode_callback
-[`fs.accessSync()`]: #fs_fs_accesssync_path_mode
-[`fs.appendFile()`]: fs.markdown#fs_fs_appendfile_file_data_options_callback
-[`fs.exists()`]: fs.markdown#fs_fs_exists_path_callback
-[`fs.fstat()`]: #fs_fs_fstat_fd_callback
-[`fs.FSWatcher`]: #fs_class_fs_fswatcher
-[`fs.futimes()`]: #fs_fs_futimes_fd_atime_mtime_callback
-[`fs.lstat()`]: #fs_fs_lstat_path_callback
-[`fs.open()`]: #fs_fs_open_path_flags_mode_callback
-[`fs.read()`]: #fs_fs_read_fd_buffer_offset_length_position_callback
-[`fs.readFile`]: #fs_fs_readfile_file_options_callback
-[`fs.stat()`]: #fs_fs_stat_path_callback
-[`fs.Stats`]: #fs_class_fs_stats
-[`fs.statSync()`]: #fs_fs_statsync_path
-[`fs.utimes()`]: #fs_fs_futimes_fd_atime_mtime_callback
-[`fs.watch()`]: #fs_fs_watch_filename_options_listener
-[`fs.write()`]: #fs_fs_write_fd_buffer_offset_length_position_callback
-[`fs.writeFile()`]: #fs_fs_writefile_file_data_options_callback
+[注意事项]: #注意事项
+[`fs.access()`]: #fsaccesspath-mode-callback
+[`fs.accessSync()`]: #fsaccesssyncpath-mode
+[`fs.appendFile()`]: #fsappendfilefile-data-options-callback
+[`fs.exists()`]: #fsexistspath-callback
+[`fs.fstat()`]: #fsfstatfd-callback
+[`fs.FSWatcher`]: #类-fsfswatcher
+[`fs.futimes()`]: #fsfutimesfd-atime-mtime-callback
+[`fs.lstat()`]: #fslstatpath-callback
+[`fs.open()`]: #fsopenpath-flags-mode-callback
+[`fs.read()`]: #fsreadfd-buffer-offset-length-position-callback
+[`fs.readFile`]: #fsreadfilefile-options-callback
+[`fs.stat()`]: #fsstatpath-callback
+[`fs.Stats`]: #类-fsstats
+[`fs.statSync()`]: #fsstatsyncpath
+[`fs.utimes()`]: #fsfutimesfd-atime-mtime-callback
+[`fs.watch()`]: #fswatchfilename-options-listener
+[`fs.write()`]: #fswritefd-buffer-offset-length-position-callback
+[`fs.writeFile()`]: #fswritefilefile-data-options-callback
 [`net.Socket`]: net.markdown#net_class_net_socket
-[`ReadStream`]: #fs_class_fs_readstream
-[`stat()`]: fs.markdown#fs_fs_stat_path_callback
+[`ReadStream`]: #类-fsreadstream
+[`stat()`]: #fsstatpath-callback
 [`util.inspect(stats)`]: util.markdown#util_util_inspect_object_options
-[`WriteStream`]: #fs_class_fs_writestream
+[`WriteStream`]: #类-fswritestream
 [MDN-Date-getTime]: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/getTime
 [MDN-Date]: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date
 [Readable Stream]: stream.markdown#stream_class_stream_readable
