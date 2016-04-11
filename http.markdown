@@ -543,7 +543,7 @@ response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);
 通过 [`response.setHeader()`][] 设置的消息头，将与传递给 [`response.writeHead()`][] 的消息头合并，传递给 [`response.writeHead()`][] 的优先。
 
 ```js
-// returns content-type = text/plain
+// 响应的 content-type 是 text/plain
 const server = http.createServer((req,res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
@@ -559,84 +559,60 @@ const server = http.createServer((req,res) => {
 
 `msecs` 用来设置套接字的超时时间值。如果提供了回调函数，则回调函数会被添加为响应对象的 `'timeout'` 事件的监听器。
 
-If no `'timeout'` listener is added to the request, the response, or
-the server, then sockets are destroyed when they time out.  If you
-assign a handler on the request, the response, or the server's
-`'timeout'` events, then it is your responsibility to handle timed out
-sockets.
+如果请求、响应、服务器都未添加 `'timeout'` 监听器，套接字将在它们超时后被销毁。如果在请求、响应、服务器上添加了 `'timeout'` 事件监听，那么需要你自己去处理超时的套接字。
 
-Returns `response`.
+返回 `response`。
 
 ### response.statusCode
 
-When using implicit headers (not calling [`response.writeHead()`][] explicitly),
-this property controls the status code that will be sent to the client when
-the headers get flushed.
+当使用隐式消息头（没有显式地调用 [`response.writeHead()`][] 修改），
+这个属性控制了当消息头刷新时被发送到客户端的状态码。
 
-Example:
+示例：
 
 ```js
 response.statusCode = 404;
 ```
 
-After response header was sent to the client, this property indicates the
-status code which was sent out.
+当响应消息头被发送到客户端后，该属性表示已经发送出去的状态码。
 
 ### response.statusMessage
 
-When using implicit headers (not calling [`response.writeHead()`][] explicitly), this property
-controls the status message that will be sent to the client when the headers get
-flushed. If this is left as `undefined` then the standard message for the status
-code will be used.
+当使用隐式消息头（没有显式地调用 [`response.writeHead()`][] 修改），
+这个属性控制了当消息头刷新时被发送到客户端的状态消息。如果未设置，即 `undefined` ，则会使用状态码的标准消息。
 
-Example:
+示例：
 
 ```js
 response.statusMessage = 'Not found';
 ```
 
-After response header was sent to the client, this property indicates the
-status message which was sent out.
+当响应消息头被发送到客户端后，该属性表示已经发送出去的状态消息。
 
 ### response.write(chunk[, encoding][, callback])
 
-If this method is called and [`response.writeHead()`][] has not been called,
-it will switch to implicit header mode and flush the implicit headers.
+如果调用了该方法但没有调用 [`response.writeHead()`][]，它将切换到隐式消息头模式并刷新隐式消息头。
 
-This sends a chunk of the response body. This method may
-be called multiple times to provide successive parts of the body.
+该方法用来发送一个响应体的数据块。它可能被多次调用以支持响应体的连续的部分。
 
-`chunk` can be a string or a buffer. If `chunk` is a string,
-the second parameter specifies how to encode it into a byte stream.
-By default the `encoding` is `'utf8'`. The last parameter `callback`
-will be called when this chunk of data is flushed.
+`chunk` 可以是字符串或缓冲区。如果 `chunk` 是一个字符串，第二个参数就表示就何种编码将其转为字节流。默认情况下 `encoding` 是 `'utf8'`。最后一个参数 `callback` 会在数据块被冲刷后调用。
 
-**Note**: This is the raw HTTP body and has nothing to do with
-higher-level multi-part body encodings that may be used.
+**注意**：这是原始的 HTTP 消息体，与可能使用的高级多部分的消息体编码无关。
 
-The first time [`response.write()`][] is called, it will send the buffered
-header information and the first body to the client. The second time
-[`response.write()`][] is called, Node.js assumes you're going to be streaming
-data, and sends that separately. That is, the response is buffered up to the
-first chunk of body.
+当 [`response.write()`][] 被首次调用，将会发送缓存的消息头和第一个消息体给客户端。第二次调用 [`response.write()`][]，Node.js 假定你将使用数据流发送，然后分别地发送。也就是说，响应被缓存到消息体的一个数据块中。
 
-Returns `true` if the entire data was flushed successfully to the kernel
-buffer. Returns `false` if all or part of the data was queued in user memory.
-`'drain'` will be emitted when the buffer is free again.
+当全部数据被冲刷到内核缓冲区后，将返回 `true`，如果全部或部分数据还在用户内存队列中，则返回 `false`。当缓冲区再次空闲时会触发 `'drain'` 事件。
 
 ### response.writeContinue()
 
-Sends a HTTP/1.1 100 Continue message to the client, indicating that
-the request body should be sent. See the [`'checkContinue'`][] event on `Server`.
+发送一个 HTTP/1.1 100 Continue 消息给客户端，表明应该发送请求体。参见 `Server` 上的 [`'checkContinue'`][] 事件。
 
 ### response.writeHead(statusCode[, statusMessage][, headers])
 
-Sends a response header to the request. The status code is a 3-digit HTTP
-status code, like `404`. The last argument, `headers`, are the response headers.
-Optionally one can give a human-readable `statusMessage` as the second
-argument.
+向请求发送一个响应消息头。`statusCode` 是一个三位数的 HTTP 状态码，如 `404`。最后一个参数 `headers` 是响应消息头。
+你还可以添加一个可读性良好的 `statusMessage` 作为第二个参数，这是可选的。
 
-Example:
+示例：
 
 ```js
 var body = 'hello world';
@@ -645,18 +621,14 @@ response.writeHead(200, {
   'Content-Type': 'text/plain' });
 ```
 
-This method must only be called once on a message and it must
-be called before [`response.end()`][] is called.
+该方法在一个消息上必须仅调用一次，而且必须在 [`response.end()`][] 之前调用。
 
-If you call [`response.write()`][] or [`response.end()`][] before calling this,
-the implicit/mutable headers will be calculated and call this function for you.
+如果在调用该方法之前调用了 [`response.write()`][] 或者 [`response.end()`][]，隐式不确定的消息头将被计算并调用该函数。
 
-When headers have been set with [`response.setHeader()`][], they will be merged with
-any headers passed to [`response.writeHead()`][], with the headers passed to
-[`response.writeHead()`][] given precedence.
+如果已经用 [`response.setHeader()`][] 设置过了消息头，将与传递给 [`response.writeHead()`][] 的消息头合并，传递给 [`response.writeHead()`][] 的优先。
 
 ```js
-// returns content-type = text/plain
+// 响应的 content-type 是 text/plain
 const server = http.createServer((req,res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
@@ -665,42 +637,30 @@ const server = http.createServer((req,res) => {
 });
 ```
 
-Note that Content-Length is given in bytes not characters. The above example
-works because the string `'hello world'` contains only single byte characters.
-If the body contains higher coded characters then `Buffer.byteLength()`
-should be used to determine the number of bytes in a given encoding.
-And Node.js does not check whether Content-Length and the length of the body
-which has been transmitted are equal or not.
+需要注意 Content-Length 是字节而非字符。上面的例子可以正常工作是因为字符串 `'hello world'` 仅包含单字节的字符。如果消息体包含了多字节的字符，就需要使用 `Buffer.byteLength()` 来确定给定编码下的字节数。Node.js 不会检查 Content-Length 与已被传输的消息体的长度是否相等。
 
-Attempting to set a header field name or value that contains invalid characters
-will result in a [`TypeError`][] being thrown.
+试图给消息头字段的名称或值设置非法字符将会导致 [`TypeError`][] 错误。
 
 ## 类： http.IncomingMessage
 
-An `IncomingMessage` object is created by [`http.Server`][] or
-[`http.ClientRequest`][] and passed as the first argument to the `'request'`
-and `'response'` event respectively. It may be used to access response status,
-headers and data.
+`IncomingMessage` 对象由 [`http.Server`][] 或 [`http.ClientRequest`][] 创建，并作为第一个参数分别传递给 `'request'` 和 `'response'` 事件。它可以被用来访问响应状态，响应头和数据。
 
-It implements the [Readable Stream][] interface, as well as the
-following additional events, methods, and properties.
+它实现了 [Readable Stream][] 接口，还包括如下额外的事件、方法和属性。
 
 ### 事件： 'close'
 
 `function () { }`
 
-Indicates that the underlying connection was closed.
-Just like `'end'`, this event occurs only once per response.
+表明底层连接已被关闭。就跟 `'end'` 事件一样，对每个响应只会触发一次。
 
 ### message.headers
 
-The request/response headers object.
+请求/响应的消息头对象。
 
-Key-value pairs of header names and values. Header names are lower-cased.
-Example:
+消息头的名称和值组成的键值对。消息头名称是小写的。示例：
 
 ```js
-// Prints something like:
+// 类似这样显示：
 //
 // { 'user-agent': 'curl/7.22.0',
 //   host: '127.0.0.1:8000',
@@ -708,24 +668,20 @@ Example:
 console.log(request.headers);
 ```
 
-Duplicates in raw headers are handled in the following ways, depending on the
-header name:
+对于原始消息头中的重复项，会以下面的方式处理，根据消息头的名称：
 
-* Duplicates of `age`, `authorization`, `content-length`, `content-type`,
+* `age`, `authorization`, `content-length`, `content-type`,
 `etag`, `expires`, `from`, `host`, `if-modified-since`, `if-unmodified-since`,
 `last-modified`, `location`, `max-forwards`, `proxy-authorization`, `referer`,
-`retry-after`, or `user-agent` are discarded.
-* `set-cookie` is always an array. Duplicates are added to the array.
-* For all other headers, the values are joined together with ', '.
+`retry-after`, 或 `user-agent` 的重复项会被舍弃。
+* `set-cookie` 总是一个数组。重复项会被添加到数组中。
+* 其它的消息头，重复项的值会以 ', ' 合并成一个值。
 
 ### message.httpVersion
 
-In case of server request, the HTTP version sent by the client. In the case of
-client response, the HTTP version of the connected-to server.
-Probably either `'1.1'` or `'1.0'`.
+当客户端发送请求时，客户端发送的 HTTP 版本。或是当服务器响应请求时，服务器的 HTTP 版本。可能是 `'1.1'` 或 `'1.0'`。
 
-Also `message.httpVersionMajor` is the first integer and
-`message.httpVersionMinor` is the second.
+`message.httpVersionMajor` 是返回值的第一个整数，`message.httpVersionMinor` 是第二个整数。
 
 ### message.method
 
