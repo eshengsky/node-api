@@ -685,23 +685,21 @@ console.log(request.headers);
 
 ### message.method
 
-**Only valid for request obtained from [`http.Server`][].**
+**仅对从 [`http.Server`][] 获得的请求有效。**
 
-The request method as a string. Read only. Example:
-`'GET'`, `'DELETE'`.
+请求的方法是一个只读字符串。例如：
+`'GET'`，`'DELETE'`。
 
 ### message.rawHeaders
 
-The raw request/response headers list exactly as they were received.
+接收到的最原始的请求/响应消息头列表。
 
-Note that the keys and values are in the same list.  It is *not* a
-list of tuples.  So, the even-numbered offsets are key values, and the
-odd-numbered offsets are the associated values.
+请注意键值在同同一个列表中。它*不是*一个元祖列表。所以，偶数偏移量是键，奇数偏移量是对应的值。
 
-Header names are not lowercased, and duplicates are not merged.
+消息头名称不是小写的，而且重复的消息头也没有合并。
 
 ```js
-// Prints something like:
+// 类似这样显示：
 //
 // [ 'user-agent',
 //   'this is invalid because there can be only one',
@@ -716,47 +714,44 @@ console.log(request.rawHeaders);
 
 ### message.rawTrailers
 
-The raw request/response trailer keys and values exactly as they were
-received.  Only populated at the `'end'` event.
+接收到的最原始的请求/响应尾部对象。只会在 `'end'` 事件中存在。
 
 ### message.setTimeout(msecs, callback)
 
 * `msecs` {Number}
 * `callback` {Function}
 
-Calls `message.connection.setTimeout(msecs, callback)`.
+调用 `message.connection.setTimeout(msecs, callback)`。
 
-Returns `message`.
+返回 `message`。
 
 ### message.statusCode
 
-**Only valid for response obtained from [`http.ClientRequest`][].**
+**仅对从 [`http.ClientRequest`][] 获得的响应有效。**
 
-The 3-digit HTTP response status code. E.G. `404`.
+三位数的 HTTP 响应状态码，如 `404`。
 
 ### message.statusMessage
 
-**Only valid for response obtained from [`http.ClientRequest`][].**
+**仅对从 [`http.ClientRequest`][] 获得的响应有效。**
 
-The HTTP response status message (reason phrase). E.G. `OK` or `Internal Server Error`.
+HTTP 响应状态消息（关于状态原因的短语），如 `OK` 或 `Internal Server Error`。
 
 ### message.socket
 
-The [`net.Socket`][] object associated with the connection.
+与该连接有关的 [`net.Socket`][] 对象。
 
-With HTTPS support, use [`request.socket.getPeerCertificate()`][] to obtain the
-client's authentication details.
+通过 HTTPS 的支持，使用 [`request.socket.getPeerCertificate()`][] 可以获得客户端的身份验证信息。
 
 ### message.trailers
 
-The request/response trailers object. Only populated at the `'end'` event.
+请求/响应中的尾部对象。只会在 `'end'` 事件中存在。
 
 ### message.url
 
-**Only valid for request obtained from [`http.Server`][].**
+**仅对从 [`http.Server`][] 获得的请求有效。**
 
-Request URL string. This contains only the URL that is
-present in the actual HTTP request. If the request is:
+请求的 URL 字符串。它仅包含实际 HTTP 请求中出现的 URL。比如下面的请求：
 
 ```
 GET /status?name=ryan HTTP/1.1\r\n
@@ -764,14 +759,13 @@ Accept: text/plain\r\n
 \r\n
 ```
 
-Then `request.url` will be:
+`request.url` 将是：
 
 ```
 '/status?name=ryan'
 ```
 
-If you would like to parse the URL into its parts, you can use
-`require('url').parse(request.url)`.  Example:
+如果你想要解析该 URL 为各个部分，你可以使用 `require('url').parse(request.url)`。示例：
 
 ```
 $ node
@@ -784,9 +778,7 @@ $ node
 }
 ```
 
-If you would like to extract the params from the query string,
-you can use the `require('querystring').parse` function, or pass
-`true` as the second argument to `require('url').parse`.  Example:
+如果你想要从查询字符串中提取参数，你可以使用 `require('querystring').parse` 函数，或者将 `true` 作为第二个参数传入 `require('url').parse`。示例：
 
 ```
 $ node
@@ -803,60 +795,51 @@ $ node
 
 * {Array}
 
-A list of the HTTP methods that are supported by the parser.
+解析器所支持的 HTTP 方法的列表。
 
 ## http.STATUS_CODES
 
 * {Object}
 
-A collection of all the standard HTTP response status codes, and the
-short description of each.  For example, `http.STATUS_CODES[404] === 'Not
-Found'`.
+所有标准 HTTP 响应状态码及其简短描述的集合。例如：`http.STATUS_CODES[404] === 'Not Found'`。
 
 ## http.createClient([port][, host])
 
-    稳定性： 0 - Deprecated: Use [`http.request()`][] instead.
+    稳定性： 0 - 弃用：请使用 [`http.request()`][] 代替。
 
-Constructs a new HTTP client. `port` and `host` refer to the server to be
-connected to.
+创建一个新的 HTTP 客户端。 `port` 和 `host` 指向要连接的服务器。
 
 ## http.createServer([requestListener])
 
-Returns a new instance of [`http.Server`][].
+返回一个新的 [`http.Server`][] 的实例。
 
-The `requestListener` is a function which is automatically
-added to the `'request'` event.
+`requestListener` 是一个被自动加入 `'request'` 事件监听队列中的函数。
 
 ## http.get(options[, callback])
 
-Since most requests are GET requests without bodies, Node.js provides this
-convenience method. The only difference between this method and [`http.request()`][]
-is that it sets the method to GET and calls `req.end()` automatically.
+因为大多数请求都是 GET 请求，没有消息体，Node.js 就提供了这个简便的方法。它与 [`http.request()`][] 唯一的不同在于它设置了 HTTP 方法为 GET 并会自动调用 `req.end()`。
 
-Example:
+实例：
 
 ```js
 http.get('http://www.google.com/index.html', (res) => {
   console.log(`Got response: ${res.statusCode}`);
-  // consume response body
+  // 消费响应的消息体
   res.resume();
 }).on('error', (e) => {
-  console.log(`Got error: ${e.message}`);
+  console.log(`出错了：${e.message}`);
 });
 ```
 
 ## http.globalAgent
 
-Global instance of Agent which is used as the default for all http client
-requests.
+Agent 的全局实例，作为所有 http 客户端请求的默认对象。
 
 ## http.request(options[, callback])
 
-Node.js maintains several connections per server to make HTTP requests.
-This function allows one to transparently issue requests.
+Node.js 会维护单个服务器上的多个连接的请求。该函数允许透明地发出请求。
 
-`options` can be an object or a string. If `options` is a string, it is
-automatically parsed with [`url.parse()`][].
+`options` 可以是一个对象或者一个字符串。如果 `options` 是一个字符串，会自动使用 [`url.parse()`][] 进行解析。
 
 Options:
 
