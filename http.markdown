@@ -1,3 +1,81 @@
+## 目录
+* [HTTP]()
+  * [类：http.Agent](#类-httpagent)
+    * [new Agent([options])](#new-agentoptions)
+    * [agent.destroy()](#agentdestroy)
+    * [agent.freeSockets](#agentfreesockets)
+    * [agent.getName(options)](#agentgetnameoptions)
+    * [agent.maxFreeSockets](#agentmaxfreesockets)
+    * [agent.maxSockets](#agentmaxsockets)
+    * [agent.requests](#agentrequests)
+    * [agent.sockets](#agentsockets)
+  * [类：http.ClientRequest](#类-httpclientrequest)
+    * [事件：'abort'](#事件-abort)
+    * [事件：'connect'](#事件-connect)
+    * [事件：'continue'](#事件-continue)
+    * [事件：'response'](#事件-response)
+    * [事件：'socket'](#事件-socket)
+    * [事件：'upgrade'](#事件-upgrade)
+    * [request.abort()](#requestabort)
+    * [request.end([data][, encoding][, callback])](#requestenddata-encoding-callback)
+    * [request.flushHeaders()](#requestflushheaders)
+    * [request.setNoDelay([noDelay])](#requestsetnodelaynodelay)
+    * [request.setSocketKeepAlive([enable][, initialDelay])](#requestsetsocketkeepaliveenable-initialdelay)
+    * [request.setTimeout(timeout[, callback])](#requestsettimeouttimeout-callback)
+    * [request.write(chunk[, encoding][, callback])](#requestwritechunk-encoding-callback)
+  * [类：http.Server](#类-httpserver)
+    * [事件：'checkContinue'](#事件-checkcontinue)
+    * [事件：'clientError'](#事件-clienterror)
+    * [事件：'close'](#事件-close)
+    * [事件：'connect'](#事件-connect)
+    * [事件：'connection'](#事件-connection)
+    * [事件：'request'](#事件-request)
+    * [事件：'upgrade'](#事件-upgrade)
+    * [server.close([callback])](#serverclosecallback)
+    * [server.listen(handle[, callback])](#serverlistenhandle-callback)
+    * [server.listen(path[, callback])](#serverlistenpath-callback)
+    * [server.listen(port[, hostname][, backlog][, callback])](#serverlistenport-hostname-backlog-callback)
+    * [server.maxHeadersCount](#servermaxheaderscount)
+    * [server.setTimeout(msecs, callback)](#serversettimeoutmsecs-callback)
+    * [server.timeout](#servertimeout)
+  * [类：http.ServerResponse](#类-httpserverresponse)
+    * [事件：'close'](#事件-close)
+    * [事件：'finish'](#事件-finish)
+    * [response.addTrailers(headers)](#responseaddtrailersheaders)
+    * [response.end([data][, encoding][, callback])](#responseenddata-encoding-callback)
+    * [response.finished](#responsefinished)
+    * [response.getHeader(name)](#responsegetheadername)
+    * [response.headersSent](#responseheaderssent)
+    * [response.removeHeader(name)](#responseremoveheadername)
+    * [response.sendDate](#responsesenddate)
+    * [response.setHeader(name, value)](#responsesetheadername-value)
+    * [response.setTimeout(msecs, callback)](#responsesettimeoutmsecs-callback)
+    * [response.statusCode](#responsestatuscode)
+    * [response.statusMessage](#responsestatusmessage)
+    * [response.write(chunk[, encoding][, callback])](#responsewritechunk-encoding-callback)
+    * [response.writeContinue()](#responsewritecontinue)
+    * [response.writeHead(statusCode[, statusMessage][, headers])](#responsewriteheadstatuscode-statusmessage-headers)
+  * [类：http.IncomingMessage](#类-httpincomingmessage)
+    * [事件：'close'](#事件-close)
+    * [message.headers](#messageheaders)
+    * [message.httpVersion](#messagehttpversion)
+    * [message.method](#messagemethod)
+    * [message.rawHeaders](#messagerawheaders)
+    * [message.rawTrailers](#messagerawtrailers)
+    * [message.setTimeout(msecs, callback)](#messagesettimeoutmsecs-callback)
+    * [message.statusCode](#messagestatuscode)
+    * [message.statusMessage](#messagestatusmessage)
+    * [message.socket](#messagesocket)
+    * [message.trailers](#messagetrailers)
+    * [message.url](#messageurl)
+    * [http.METHODS](#httpmethods)
+    * [http.STATUS_CODES](#httpstatus_codes)
+    * [http.createClient([port][, host])](#httpcreateclientport-host)
+    * [http.createServer([requestListener])](#httpcreateserverrequestlistener)
+    * [http.get(options[, callback])](#httpgetoptions-callback)
+    * [http.globalAgent](#httpglobalagent)
+    * [http.request(options[, callback])](#httprequestoptions-callback)
+
 # HTTP
 
     稳定性： 2 - 稳定
@@ -843,40 +921,27 @@ Node.js 会维护单个服务器上的多个连接的请求。该函数允许透
 
 Options:
 
-- `protocol`: Protocol to use. Defaults to `'http:'`.
-- `host`: A domain name or IP address of the server to issue the request to.
-  Defaults to `'localhost'`.
-- `hostname`: Alias for `host`. To support [`url.parse()`][] `hostname` is
-  preferred over `host`.
-- `family`: IP address family to use when resolving `host` and `hostname`.
-  Valid values are `4` or `6`. When unspecified, both IP v4 and v6 will be
-  used.
-- `port`: Port of remote server. Defaults to 80.
-- `localAddress`: Local interface to bind for network connections.
-- `socketPath`: Unix Domain Socket (use one of host:port or socketPath).
-- `method`: A string specifying the HTTP request method. Defaults to `'GET'`.
-- `path`: Request path. Defaults to `'/'`. Should include query string if any.
-  E.G. `'/index.html?page=12'`. An exception is thrown when the request path
-  contains illegal characters. Currently, only spaces are rejected but that
-  may change in the future.
-- `headers`: An object containing request headers.
-- `auth`: Basic authentication i.e. `'user:password'` to compute an
-  Authorization header.
-- `agent`: Controls [`Agent`][] behavior. When an Agent is used request will
-  default to `Connection: keep-alive`. Possible values:
- - `undefined` (default): use [`http.globalAgent`][] for this host and port.
- - `Agent` object: explicitly use the passed in `Agent`.
- - `false`: opts out of connection pooling with an Agent, defaults request to
-   `Connection: close`.
+- `protocol`：使用的协议。默认是 `'http:'`。
+- `host`：请求目标的域名或服务器的 IP 地址。默认是 `'localhost'`。
+- `hostname`：`host` 的别名。要支持 [`url.parse()`][] `hostname` 优先于 `host`。
+- `family`: 解析 `host` 和 `hostname` 时使用的 IP 地址类型。有效值是 `4` 或 `6`。如果未指定，则会使用 IP v4 和 v6 。
+- `port`：远程服务器的端口号。默认是 80.
+- `localAddress`：网络连接绑定的本地接口。
+- `socketPath`：Unix 域名套接字（使用 主机:端口号 或套接字路径）。
+- `method`：HTTP 请求方法。默认值是 `'GET'`。
+- `path`：请求路径。默认值是 `'/'`。如果有查询字符串也需要包含在内。例如：`'/index.html?page=12'`。当请求路径包含非法字符时会抛出异常。当前只有空格视作非法，但将来可能会变化。
+- `headers`：包含请求消息头的对象。
+- `auth`：基础验证，即 `'user:password'` 计算出一个验证消息头。
+- `agent`：控制 [`Agent`][] 的行为。当使用了 Agent 则请求将默认是 `Connection: keep-alive`。可能的值：
+ - `undefined` （默认值），为当前的主机和端口使用 [`http.globalAgent`][]。
+ - `Agent` 对象： 显式地使用传入的 `Agent`。
+ - `false`：选择与 Agent 相关的连接池，默认连接是 `Connection: close`。
 
-The optional `callback` parameter will be added as a one time listener for
-the `'response'` event.
+可选的 `callback` 参数将作为一个一次性的监听器添加到 `'response'` 事件上。
 
-`http.request()` returns an instance of the [`http.ClientRequest`][]
-class. The `ClientRequest` instance is a writable stream. If one needs to
-upload a file with a POST request, then write to the `ClientRequest` object.
+`http.request()` 返回 [`http.ClientRequest`][] 类的一个实例。`ClientRequest` 实例是一个可写流。如果需要通过 POST 请求上传一个文件，就可以通过写入 `ClientRequest` 对象。
 
-Example:
+示例：
 
 ```js
 var postData = querystring.stringify({
@@ -902,77 +967,67 @@ var req = http.request(options, (res) => {
     console.log(`BODY: ${chunk}`);
   });
   res.on('end', () => {
-    console.log('No more data in response.')
+    console.log('响应的数据已读取完毕！')
   })
 });
 
 req.on('error', (e) => {
-  console.log(`problem with request: ${e.message}`);
+  console.log(`请求出错：${e.message}`);
 });
 
-// write data to request body
+// 写入数据到请求体
 req.write(postData);
 req.end();
 ```
 
-Note that in the example `req.end()` was called. With `http.request()` one
-must always call `req.end()` to signify that you're done with the request -
-even if there is no data being written to the request body.
+请注意，这个例子调用了 `req.end()`。 `http.request()` 中你必须总是调用 `req.end()` 来表明你完成了请求——即便没有任何数据写入到请求体。
 
-If any error is encountered during the request (be that with DNS resolution,
-TCP level errors, or actual HTTP parse errors) an `'error'` event is emitted
-on the returned request object. As with all `'error'` events, if no listeners
-are registered the error will be thrown.
+在请求过程中遇到的任何错误（如DNS解析、TCP 错误或实际的 HTTP 解析错误）将会在返回的请求对象上触发 `'error'` 事件。与所有的 `'error'` 事件一样，如果没有注册任何监听器则错误将会被抛出。
 
-There are a few special headers that should be noted.
+有一些需要注意的特殊的消息头：
 
-* Sending a 'Connection: keep-alive' will notify Node.js that the connection to
-  the server should be persisted until the next request.
+* 发送一个 'Connection: keep-alive' 将会通知 Node.js 到服务器的连接应该一直持续到下一个请求。
 
-* Sending a 'Content-length' header will disable the default chunked encoding.
+* 发送一个 'Content-length' 消息头将会禁用默认的块编码。
 
-* Sending an 'Expect' header will immediately send the request headers.
-  Usually, when sending 'Expect: 100-continue', you should both set a timeout
-  and listen for the `'continue'` event. See RFC2616 Section 8.2.3 for more
-  information.
+* 发送一个 'Expect' 消息头将立即发送请求消息头。通常，当发送 'Expect: 100-continue'，你应该设置一个超时，并且监听 `'continue'` 事件。查看 RFC2616 Section 8.2.3。
 
-* Sending an Authorization header will override using the `auth` option
-  to compute basic authentication.
+* 发送一个 Authorization 消息头将会覆盖用于计算基础验证的 `auth`  选项。
 
-[`'checkContinue'`]: #http_event_checkcontinue
-[`'listening'`]: net.html#net_event_listening
-[`'response'`]: #http_event_response
-[`Agent`]: #http_class_http_agent
-[`Buffer`]: buffer.html#buffer_buffer
-[`destroy()`]: #http_agent_destroy
-[`EventEmitter`]: events.html#events_class_events_eventemitter
-[`http.Agent`]: #http_class_http_agent
-[`http.ClientRequest`]: #http_class_http_clientrequest
-[`http.globalAgent`]: #http_http_globalagent
-[`http.IncomingMessage`]: #http_class_http_incomingmessage
-[`http.request()`]: #http_http_request_options_callback
-[`http.Server`]: #http_class_http_server
-[`http.ServerResponse`]: #http_class_http_serverresponse
-[`message.headers`]: #http_message_headers
-[`net.Server`]: net.html#net_class_net_server
-[`net.Server.close()`]: net.html#net_server_close_callback
-[`net.Server.listen()`]: net.html#net_server_listen_handle_callback
-[`net.Server.listen(path)`]: net.html#net_server_listen_path_callback
-[`net.Server.listen(port)`]: net.html#net_server_listen_port_hostname_backlog_callback
-[`net.Socket`]: net.html#net_class_net_socket
-[`request.socket.getPeerCertificate()`]: tls.html#tls_tlssocket_getpeercertificate_detailed
-[`response.end()`]: #http_response_end_data_encoding_callback
-[`response.setHeader()`]: #http_response_setheader_name_value
-[`response.write()`]: #http_response_write_chunk_encoding_callback
-[`response.write(data, encoding)`]: #http_response_write_chunk_encoding_callback
-[`response.writeContinue()`]: #http_response_writecontinue
-[`response.writeHead()`]: #http_response_writehead_statuscode_statusmessage_headers
-[`socket.setKeepAlive()`]: net.html#net_socket_setkeepalive_enable_initialdelay
-[`socket.setNoDelay()`]: net.html#net_socket_setnodelay_nodelay
-[`socket.setTimeout()`]: net.html#net_socket_settimeout_timeout_callback
-[`stream.setEncoding()`]: stream.html#stream_stream_setencoding_encoding
-[`TypeError`]: errors.html#errors_class_typeerror
-[`url.parse()`]: url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost
-[构造函数选项]: #http_new_agent_options
-[Readable Stream]: stream.html#stream_class_stream_readable
-[Writable Stream]: stream.html#stream_class_stream_writable
+[`'checkContinue'`]: #事件-checkcontinue
+[`'listening'`]: net.markdown#事件-listening
+[`'response'`]: #事件-response
+[`Agent`]: #类-httpagent
+[`Buffer`]: buffer.markdown#buffer
+[`destroy()`]: #agentdestroy
+[`EventEmitter`]: events.markdown#类-eventemitter
+[`http.Agent`]: #类-httpagent
+[`http.ClientRequest`]: #类-httpclientrequest
+[`http.globalAgent`]: #httpglobalagent
+[`http.IncomingMessage`]: #类-httpincomingmessage
+[`http.request()`]: #httprequestoptions-callback
+[`http.Server`]: #类-httpserver
+[`http.ServerResponse`]: #类-httpserverresponse
+[`message.headers`]: #messageheaders
+[`net.Server`]: net.markdown#类-server
+[`net.Server.close()`]: net.markdown#serverclosecallback
+[`net.Server.listen()`]: net.markdown#serverlistenhandle-callback
+[`net.Server.listen(path)`]: net.markdown#serverlistenpath-callback
+[`net.Server.listen(port)`]: net.markdown#serverlistenport-hostname-backlog-callback
+[`net.Socket`]: net.markdown#类-socket
+[`request.socket.getPeerCertificate()`]: tls.markdown#tlssocketgetpeercertificatedetailed
+[`response.end()`]: #responseenddata-encoding-callback
+[`response.setHeader()`]: #responsesetheadername-value
+[`response.write()`]: #responsewritechunk-encoding-callback
+[`response.write(data, encoding)`]: #responsewritechunk-encoding-callback
+[`response.writeContinue()`]: #responsewritecontinue
+[`response.writeHead()`]: #responsewriteheadstatuscode-statusmessage-headers
+[`socket.setKeepAlive()`]: net.markdown#socketsetkeepaliveenable-initialdelay
+[`socket.setNoDelay()`]: net.markdown#socketsetnodelay-nodelay
+[`socket.setTimeout()`]: net.markdown#socketsettimeouttimeout-callback
+[`stream.setEncoding()`]: stream.markdown#streamsetencodingencoding
+[`TypeError`]: errors.markdown#类-typeerror
+[`url.parse()`]: url.markdown#urlparseurlstr-parsequerystring-slashesdenotehost
+[构造函数选项]: #new-agentoptions
+[Readable Stream]: stream.markdown#类-streamreadable
+[Writable Stream]: stream.markdown#类-streamwritable
