@@ -1,5 +1,9 @@
-## Node.js 中文API文档  
-基于 v4.42 LTS，初始文档来自 [Node官方仓库](https://github.com/nodejs/node/tree/v4.4.2/doc/api)。  
+## Node.js 中文 API 文档  
+基于 Node.js v4.42 LTS（长期支持版）翻译制作，源文档来自[官方仓库](https://github.com/nodejs/node/tree/v4.4.2/doc/api)。  
+_翻译的过程也是学习和系统性梳理的过程~_
 
 ###目录  
 * [关于本文档](documentation.markdown)
+* [概要](synopsis.markdown)
+* [文件系统](fs.markdown)
+* [HTTP](http.markdown)
