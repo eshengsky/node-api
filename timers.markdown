@@ -61,9 +61,9 @@
 
 返回定时器。
 
-[`clearImmediate`]: timers.markdown#clearimmediate-immediateobject
-[`clearInterval`]: timers.markdown#clearinterval-intervalobject
-[`clearTimeout`]: timers.markdown#cleartimeout-timeoutobject
-[`setImmediate`]: timers.markdown#setimmediate-callback-arg
-[`setInterval`]: timers.markdown#setinterval-callback-delay-arg
-[`setTimeout`]: timers.markdown#settimeout-callback-delay-arg
+[`clearImmediate`]: timers.markdown#clearimmediateimmediateobject
+[`clearInterval`]: timers.markdown#clearintervalintervalobject
+[`clearTimeout`]: timers.markdown#cleartimeouttimeoutobject
+[`setImmediate`]: timers.markdown#setimmediatecallback-arg-
+[`setInterval`]: timers.markdown#setintervalcallback-delay-arg-
+[`setTimeout`]: timers.markdown#settimeoutcallback-delay-arg-
