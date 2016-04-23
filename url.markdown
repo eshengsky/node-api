@@ -1,75 +1,74 @@
+## 目录
+* [URL](#url)
+  * [URL 解析](#url-解析)
+    * [转义字符](#转义字符)
+  * [url.format(urlObj)](#urlformaturlobj)
+  * [url.parse(urlStr[, parseQueryString][, slashesDenoteHost])](#urlparseurlstr-parsequerystring-slashesdenotehost)
+  * [url.resolve(from, to)](#urlresolvefrom-to)
+
 # URL
 
-    Stability: 2 - Stable
+    稳定性： 2 - 稳定
 
-This module has utilities for URL resolution and parsing.
-Call `require('url')` to use it.
+该模块包含对 URL 进行解析的工具。通过 `require('url')` 来使用该模块。
 
-## URL Parsing
+## URL 解析
 
-Parsed URL objects have some or all of the following fields, depending on
-whether or not they exist in the URL string. Any parts that are not in the URL
-string will not be in the parsed object. Examples are shown for the URL
+解析后的 URL 对象包括如下部分或全部的字段，取决于 URL 字符串中是否存在对应字段。URL 字符串中不存在的部分也不会出现在解析后的对象中。这是例子所示的 URL：
 
 `'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'`
 
-* `href`: The full URL that was originally parsed. Both the protocol and host are lowercased.
+* `href`：所解析的完整原始的 URL。协议和主机名都被换转为小写。
 
-    Example: `'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'`
+    示例：`'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'`
 
-* `protocol`: The request protocol, lowercased.
+* `protocol`：请求协议，小写。
 
-    Example: `'http:'`
+    示例：`'http:'`
 
-* `slashes`: The protocol requires slashes after the colon.
+* `slashes`：协议在冒号之后是否有斜杠。
 
-    Example: true or false
+    示例：true 或 false
 
-* `host`: The full lowercased host portion of the URL, including port
-  information.
+* `host`：URL 中完整且小写的主机部分，包括端口信息。
 
-    Example: `'host.com:8080'`
+    示例：`'host.com:8080'`
 
-* `auth`: The authentication information portion of a URL.
+* `auth`：URL 中验证信息部分。
 
-    Example: `'user:pass'`
+    示例：`'user:pass'`
 
-* `hostname`: Just the lowercased hostname portion of the host.
+* `hostname`：小写的主机名部分。
 
-    Example: `'host.com'`
+    示例：`'host.com'`
 
-* `port`: The port number portion of the host.
+* `port`：端口号部分。
 
-    Example: `'8080'`
+    示例：`'8080'`
 
-* `pathname`: The path section of the URL, that comes after the host and
-  before the query, including the initial slash if present. No decoding is
-  performed.
+* `pathname`：URL 中的路径部分，位于主机部分之后、查询之前，包括开头的斜杠——如果有的话。路径未解码。
 
-    Example: `'/p/a/t/h'`
+    示例：`'/p/a/t/h'`
 
-* `search`: The 'query string' portion of the URL, including the leading
-  question mark.
+* `search`：URL 中的查询字符串部分，包括开头的问号。
 
-    Example: `'?query=string'`
+    示例：`'?query=string'`
 
-* `path`: Concatenation of `pathname` and `search`. No decoding is performed.
+* `path`：`pathname` 和 `search` 连接在一起的部分。并没有解码。
 
-    Example: `'/p/a/t/h?query=string'`
+    示例：`'/p/a/t/h?query=string'`
 
-* `query`: Either the 'params' portion of the query string, or a
-  querystring-parsed object.
+* `query`：查询字符串中的参数部分，或者使用 `querystring` 转换后的对象。
 
-    Example: `'query=string'` or `{'query':'string'}`
+    示例：`'query=string'` 或 `{'query':'string'}`
 
-* `hash`: The 'fragment' portion of the URL including the pound-sign.
+* `hash`：URL 中的信息片段部分，包括 # 符号。
 
-    Example: `'#hash'`
+    示例：`'#hash'`
 
-### Escaped Characters
+### 转义字符
 
-Spaces (`' '`) and the following characters will be automatically escaped in the
-properties of URL objects:
+空格 (`' '`) 以及如下的字符在被解析为 URL 对象时会自动转义：
 
 ```
 < > " ` \r \n \t { } | \ ^ '
@@ -77,52 +76,42 @@ properties of URL objects:
 
 ---
 
-The following methods are provided by the URL module:
+以下是 URL 模块提供的方法：
 
 ## url.format(urlObj)
 
-Take a parsed URL object, and return a formatted URL string.
+给定一个解析后的 URL 对象，返回一个经过格式化的 URL 字符串。
 
-Here's how the formatting process works:
+格式化进程是如何工作的：
 
-* `href` will be ignored.
-* `path` will be ignored.
-* `protocol` is treated the same with or without the trailing `:` (colon).
-  * The protocols `http`, `https`, `ftp`, `gopher`, `file` will be
-    postfixed with `://` (colon-slash-slash) as long as `host`/`hostname` are present.
-  * All other protocols `mailto`, `xmpp`, `aim`, `sftp`, `foo`, etc will
-    be postfixed with `:` (colon).
-* `slashes` set to `true` if the protocol requires `://` (colon-slash-slash)
-  * Only needs to be set for protocols not previously listed as requiring
-    slashes, such as `mongodb://localhost:8000/`, or if `host`/`hostname` are absent.
-* `auth` will be used if present.
-* `hostname` will only be used if `host` is absent.
-* `port` will only be used if `host` is absent.
-* `host` will be used in place of `hostname` and `port`.
-* `pathname` is treated the same with or without the leading `/` (slash).
-* `query` (object; see `querystring`) will only be used if `search` is absent.
-* `search` will be used in place of `query`.
-  * It is treated the same with or without the leading `?` (question mark).
-* `hash` is treated the same with or without the leading `#` (pound sign, anchor).
+* `href` 将被忽略。
+* `path` 将被忽略。
+* `protocol` 无论结尾是否有 `:`（冒号），都以相同的方式进行处理：
+  * 协议 `http`, `https`, `ftp`, `gopher`, `file` 将添加后缀 `://`（冒号斜杠斜杠），只要 `host`/`hostname` 存在。
+  * 其它的任何协议如 `mailto`, `xmpp`, `aim`, `sftp`, `foo` 将添加后缀 `:`（冒号）。
+* `slashes` 如果协议要求 `://`  则设为 `true`。
+  * 仅当协议不是上文所列出的默认加 `://` 的才需要手动设置该属性。例如 `mongodb://localhost:8000/`，或者当 `host`/`hostname` 缺失时。
+* `auth` 如果存在会被使用。
+* `hostname` 仅当 `host` 缺失时被使用。
+* `port` 仅当 `host` 缺失时使用。
+* `host` 将代替 `hostname` 和 `port` 被使用。
+* `pathname` 无论开头是否有 `/`（斜杠）都会以相同的方式进行处理。
+* `query` （对象，查看 `querystring`）仅当 `search` 缺失时被使用。
+* `search` 将代替 `query` 被使用。
+  * 无论开头是否有 `?`（问号）都会以相同的方式进行处理。
+* `hash` 无论开头是否有 `#`（井号，锚点）都会以相同的方式进行处理。
 
 ## url.parse(urlStr[, parseQueryString][, slashesDenoteHost])
 
-Take a URL string, and return an object.
+给定一个 URL 字符串，返回一个对象。
 
-Pass `true` as the second argument to also parse the query string using the
-`querystring` module. If `true` then the `query` property will always be
-assigned an object, and the `search` property will always be a (possibly
-empty) string. If `false` then the `query` property will not be parsed or
-decoded. Defaults to `false`.
+传入 `true` 作为第二个参数会使用 `querystring` 模块来解析查询字符串。如果传入 `true` 那么 `query` 属性将总是一个对象，`search` 属性将总是一个字符串（可能为空）。如果传入 `false` 那么 `query` 属性将不会被解析或解码。默认是 `false`。
 
-Pass `true` as the third argument to treat `//foo/bar` as
-`{ host: 'foo', pathname: '/bar' }` rather than
-`{ pathname: '//foo/bar' }`. Defaults to `false`.
+传入 `true` 作为第三个参数会将 `//foo/bar` 解析成 `{ host: 'foo', pathname: '/bar' }` 而不是 `{ pathname: '//foo/bar' }`。默认是 `false`。
 
 ## url.resolve(from, to)
 
-Take a base URL, and a href URL, and resolve them as a browser would for
-an anchor tag.  Examples:
+给定一个基础的 URL 和一个额外的链接，会像浏览器一样解析它们并可以带上锚点。示例：
 
 ```js
 url.resolve('/one/two/three', 'four')         // '/one/two/four'
