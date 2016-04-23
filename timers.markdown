@@ -1,85 +1,69 @@
-# Timers
+## 目录
+* [定时器](#定时器)
+  * [clearImmediate(immediateObject)](#clearimmediateimmediateobject)
+  * [clearInterval(intervalObject)](#clearintervalintervalobject)
+  * [clearTimeout(timeoutObject)](#cleartimeouttimeoutobject)
+  * [ref()](#ref)
+  * [setImmediate(callback[, arg][, ...])](#setimmediatecallback-arg-)
+  * [setInterval(callback, delay[, arg][, ...])](#setintervalcallback-delay-arg-)
+  * [setTimeout(callback, delay[, arg][, ...])](#settimeoutcallback-delay-arg-)
+  * [unref()](#unref)
 
-    Stability: 3 - Locked
+# 定时器
 
-All of the timer functions are globals.  You do not need to `require()`
-this module in order to use them.
+    稳定性： 3 - 已锁定
+
+所有的定时器函数都是全局的，即不需要 `require()` 就可以使用它们。
 
 ## clearImmediate(immediateObject)
 
-Stops an `immediateObject`, as created by [`setImmediate`][], from triggering.
+停止一个 `immediateObject` 的触发，`immediateObject` 是由 [`setImmediate`][] 创建的回调函数。
 
 ## clearInterval(intervalObject)
 
-Stops an `intervalObject`, as created by [`setInterval`][], from triggering.
+停止一个 `intervalObject` 的触发，`intervalObject` 是由 [`setInterval`][] 创建的回调函数。
 
 ## clearTimeout(timeoutObject)
 
-Prevents a `timeoutObject`, as created by [`setTimeout`][], from triggering.
+停止一个 `timeoutObject` 的触发，`timeoutObject` 是由 [`setTimeout`][] 创建的回调函数。
 
 ## ref()
 
-If a timer was previously `unref()`d, then `ref()` can be called to explicitly
-request the timer hold the program open. If the timer is already `ref`d calling
-`ref` again will have no effect.
+如果一个定时器之前已被 `unref()` 过了，那么调用 `ref()` 可以显式得请求定时器保持程序运行。如果定时器已经被 `ref` 了，再次调用 `ref` 不会产生其他影响。
 
-Returns the timer.
+返回定时器。
 
 ## setImmediate(callback[, arg][, ...])
 
-To schedule the "immediate" execution of `callback` after I/O events'
-callbacks and before timers set by [`setTimeout`][] and [`setInterval`][] are
-triggered. Returns an `immediateObject` for possible use with
-[`clearImmediate`][]. Additional optional arguments may be passed to the
-callback.
+计划一个 "立即" 执行的 `callback`，它会在所有的 I/O 时间的回调触发之后以及由 [`setTimeout`][] 和 [`setInterval`][] 设置的回调触发之前执行。 返回一个 `immediateObject`，[`clearImmediate`][] 可能会用到它。额外的可选参数会被传入回调函数中。
 
-Callbacks for immediates are queued in the order in which they were created.
-The entire callback queue is processed every event loop iteration. If an
-immediate is queued from inside an executing callback, that immediate won't fire
-until the next event loop iteration.
+回调已按照它们创建时的顺序加入队列。整个回调队列在每个事件循环迭代中被处理。如果在一个正被执行中的回调上添加一个 immediate，那么它将直到下一个事件循环迭代才会被触发。
 
 ## setInterval(callback, delay[, arg][, ...])
 
-To schedule the repeated execution of `callback` every `delay` milliseconds.
-Returns a `intervalObject` for possible use with [`clearInterval`][]. Additional
-optional arguments may be passed to the callback.
+计划一个每隔 `delay` 毫秒便执行一次的 `callback` 。返回一个 `intervalObject`，[`clearInterval`][] 可能会用到它。额外的可选参数会被传入回调函数中。
 
-To follow browser behavior, when using delays larger than 2147483647
-milliseconds (approximately 25 days) or less than 1, Node.js will use 1 as the
-`delay`.
+为了与浏览器端行为保持一致，当 `delay` 大于 2147483647 毫秒（约 25 天）或者小于 1，Node.js 将使用 1 作为 `delay` 值。
 
 ## setTimeout(callback, delay[, arg][, ...])
 
-To schedule execution of a one-time `callback` after `delay` milliseconds.
-Returns a `timeoutObject` for possible use with [`clearTimeout`][]. Additional
-optional arguments may be passed to the callback.
+计划一个在 `delay` 毫秒后执行一次的 `callback` 。返回一个 `timeoutObject`，[`clearTimeout`][] 可能会用到它。额外的可选参数会被传入回调函数中。
 
-The callback will likely not be invoked in precisely `delay` milliseconds.
-Node.js makes no guarantees about the exact timing of when callbacks will fire,
-nor of their ordering. The callback will be called as close as possible to the
-time specified.
+回调可能不会在精确的  `delay` 毫秒后被调用。Node.js 不能保证回调被触发的精确时间和顺序，回调会在尽可能接近指定时间上被调用。
 
-To follow browser behavior, when using delays larger than 2147483647
-milliseconds (approximately 25 days) or less than 1, the timeout is executed
-immediately, as if the `delay` was set to 1.
+为了与浏览器端行为保持一致，当 `delay` 大于 2147483647 毫秒（约 25 天）或者小于 1，将被立即执行，就好像 `delay` 被设为了 1.
 
 ## unref()
 
-The opaque value returned by [`setTimeout`][] and [`setInterval`][] also has the
-method `timer.unref()` which allows the creation of a timer that is active but
-if it is the only item left in the event loop, it won't keep the program
-running. If the timer is already `unref`d calling `unref` again will have no
-effect.
+[`setTimeout`][] 和 [`setInterval`][] 的返回值也拥有方法 `timer.unref()`，该方法允许创建一个活动的定时器，但如果它是时间循环中的仅剩的那一项则不会运行。如果定时器已经被 `unref` 了，再次调用 `unref` 不会产生其他影响。
 
-In the case of [`setTimeout`][], `unref` creates a separate timer that will
-wakeup the event loop, creating too many of these may adversely effect event
-loop performance -- use wisely.
+对于 [`setTimeout`][]， `unref` 会创建一个单独的定时器，它将唤醒时间循环。创建太多这种定时器可能会对时间循环的性能有不利影响 -- 谨慎使用。
 
-Returns the timer.
+返回定时器。
 
-[`clearImmediate`]: timers.html#timers_clearimmediate_immediateobject
-[`clearInterval`]: timers.html#timers_clearinterval_intervalobject
-[`clearTimeout`]: timers.html#timers_cleartimeout_timeoutobject
-[`setImmediate`]: timers.html#timers_setimmediate_callback_arg
-[`setInterval`]: timers.html#timers_setinterval_callback_delay_arg
-[`setTimeout`]: timers.html#timers_settimeout_callback_delay_arg
+[`clearImmediate`]: timers.markdown#clearimmediate-immediateobject
+[`clearInterval`]: timers.markdown#clearinterval-intervalobject
+[`clearTimeout`]: timers.markdown#cleartimeout-timeoutobject
+[`setImmediate`]: timers.markdown#setimmediate-callback-arg
+[`setInterval`]: timers.markdown#setinterval-callback-delay-arg
+[`setTimeout`]: timers.markdown#settimeout-callback-delay-arg
