@@ -1,108 +1,113 @@
-# Path
+## 目录
+* [路径](#路径)
+  * [path.basename(p[, ext])](#pathbasenamep-ext)
+  * [path.delimiter](#pathdelimiter)
+  * [path.dirname(p)](#pathdirnamep)
+  * [path.extname(p)](#pathextnamep)
+  * [path.format(pathObject)](#pathformatpathobject)
+  * [path.isAbsolute(path)](#pathisabsolutepath)
+  * [path.join([path1][, path2][, ...])](#pathjoinpath1-path2-)
+  * [path.normalize(p)](#pathnormalizep)
+  * [path.parse(pathString)](#pathparsepathstring)
+  * [path.posix](#pathposix)
+  * [path.relative(from, to)](#pathrelativefrom-to)
+  * [path.resolve([from ...], to)](#pathresolvefrom--to)
+  * [path.sep](#pathsep)
+  * [path.win32](#pathwin32)
 
-    Stability: 2 - Stable
+# 路径
 
-This module contains utilities for handling and transforming file
-paths.  Almost all these methods perform only string transformations.
-The file system is not consulted to check whether paths are valid.
+    稳定性： 2 - 稳定
 
-Use `require('path')` to use this module.  The following methods are provided:
+该模块包含处理和转换文件路径的工具。几乎所有这些方法仅执行字符串转换。文件系统并不会去检查路径是否有效。
+
+通过 `require('path')` 来使用该模块。提供以下方法：
 
 ## path.basename(p[, ext])
 
-Return the last portion of a path.  Similar to the Unix `basename` command.
+返回路径的最后一个部分。类似于Unix `basename` 命令。
 
-Example:
+示例：
 
 ```js
 path.basename('/foo/bar/baz/asdf/quux.html')
-// returns 'quux.html'
+// 返回 'quux.html'
 
 path.basename('/foo/bar/baz/asdf/quux.html', '.html')
-// returns 'quux'
+// 返回 'quux'
 ```
 
 ## path.delimiter
 
-The platform-specific path delimiter, `;` or `':'`.
+特定平台上路径间的分隔符，`;` 或 `':'`。
 
-An example on \*nix:
+\*nix 平台的一个例子：
 
 ```js
 console.log(process.env.PATH)
 // '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin'
 
 process.env.PATH.split(path.delimiter)
-// returns ['/usr/bin', '/bin', '/usr/sbin', '/sbin', '/usr/local/bin']
+// 返回 ['/usr/bin', '/bin', '/usr/sbin', '/sbin', '/usr/local/bin']
 ```
 
-An example on Windows:
+Windows 平台的一个例子：
 
 ```js
 console.log(process.env.PATH)
 // 'C:\Windows\system32;C:\Windows;C:\Program Files\node\'
 
 process.env.PATH.split(path.delimiter)
-// returns ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files\\node\\']
+// 返回 ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files\\node\\']
 ```
 
 ## path.dirname(p)
 
-Return the directory name of a path.  Similar to the Unix `dirname` command.
+返回路径所在的目录名。类似于 Unix `dirname` 命令。
 
-Example:
+示例：
 
 ```js
 path.dirname('/foo/bar/baz/asdf/quux')
-// returns '/foo/bar/baz/asdf'
+// 返回 '/foo/bar/baz/asdf'
 ```
 
 ## path.extname(p)
 
-Return the extension of the path, from the last '.' to end of string
-in the last portion of the path.  If there is no '.' in the last portion
-of the path or the first character of it is '.', then it returns
-an empty string.  Examples:
+返回路径的扩展名，从路径最后一个部分的最后的 '.' 到路径字符串的结尾。如果路径最后一个部分没有 '.' 或者路径最后一个部分是以 '.' 开头，则会返回一个空字符串。示例：
 
 ```js
 path.extname('index.html')
-// returns '.html'
+// 返回 '.html'
 
 path.extname('index.coffee.md')
-// returns '.md'
+// 返回 '.md'
 
 path.extname('index.')
-// returns '.'
+// 返回 '.'
 
 path.extname('index')
-// returns ''
+// 返回 ''
 
 path.extname('.index')
-// returns ''
+// 返回 ''
 ```
 
 ## path.format(pathObject)
 
-Returns a path string from an object. This is the opposite of [`path.parse`][].
+从一个对象中返回一个路径字符串。与 [`path.parse`][] 正好相反。
 
-If `pathObject` has `dir` and `base` properties, the returned string will
-be a concatenation of the `dir` property, the platform-dependent path separator,
-and the `base` property.
+如果 `pathObject` 包含了 `dir` 和 `base` 属性，返回的字符串将是 `dir` 属性、平台相关的路径分隔符以及 `base` 属性连接起来的字符串。
 
-If the `dir` property is not supplied, the `root` property will be used as the
-`dir` property. However, it will be assumed that the `root` property already
-ends with the platform-dependent path separator. In this case, the returned
-string will be the concatenation fo the `root` property and the `base` property.
+如果没有 `dir` 属性，`root` 属性将被视为 `dir` 属性使用。然而，这将假定 `root` 属性已经以平台相关的路径分隔符结束了。在这种情况下，返回的字符串将是 `root` 属性和 `base` 属性连接起来的字符串。
 
-If both the `dir` and the `root` properties are not supplied, then the returned
-string will be the contents of the `base` property.
+如果 `dir` 和 `root` 属性都不存在，那么返回的字符串将是 `base` 属性的内容。
 
-If the `base` property is not supplied, a concatenation of the `name` property
-and the `ext` property will be used as the `base` property.
+如果 `base` 属性不存在，那么会将 `name` 属性和 `ext` 属性连接起来作为 `base` 属性。
 
-Examples:
+示例：
 
-An example on Posix systems:
+Posix 系统的一个例子：
 
 ```js
 path.format({
@@ -112,10 +117,9 @@ path.format({
     ext : ".txt",
     name : "file"
 });
-// returns '/home/user/dir/file.txt'
+// 返回 '/home/user/dir/file.txt'
 
-// `root` will be used if `dir` is not specified and `name` + `ext` will be used
-// if `base` is not specified
+// 如果未指定 `dir` 则使用 `root`，如果未指定 `base` 则使用 `name` + `ext` 。
 path.format({
     root : "/",
     ext : ".txt",
@@ -124,7 +128,7 @@ path.format({
 // returns '/file.txt'
 ```
 
-An example on Windows:
+Windows 系统的一个例子：
 
 ```js
 path.format({
@@ -134,15 +138,14 @@ path.format({
     ext : ".txt",
     name : "file"
 })
-// returns 'C:\\path\\dir\\file.txt'
+// 返回 'C:\\path\\dir\\file.txt'
 ```
 
 ## path.isAbsolute(path)
 
-Determines whether `path` is an absolute path. An absolute path will always
-resolve to the same location, regardless of the working directory.
+判断 `path` 是否是一个绝对路径。绝对路径将总是解析为相同的位置，与当前工作目录无关。
 
-Posix examples:
+Posix 示例：
 
 ```js
 path.isAbsolute('/foo/bar') // true
@@ -151,7 +154,7 @@ path.isAbsolute('qux/')     // false
 path.isAbsolute('.')        // false
 ```
 
-Windows examples:
+Windows 示例：
 
 ```js
 path.isAbsolute('//server')  // true
@@ -160,60 +163,51 @@ path.isAbsolute('bar\\baz')  // false
 path.isAbsolute('.')         // false
 ```
 
-*Note:* If the path string passed as parameter is a zero-length string, unlike
-        other path module functions, it will be used as-is and `false` will be
-        returned.
+*注意：* 如果路径字符串传入了一个长度为 0 的字符串，与其他路径模块相关方法不同的是，这将按原样使用并返回 `false` 。
 
 ## path.join([path1][, path2][, ...])
 
-Join all arguments together and normalize the resulting path.
+连接所有参数并规范化结果路径。
 
-Arguments must be strings.  In v0.8, non-string arguments were
-silently ignored.  In v0.10 and up, an exception is thrown.
+参数必须都是字符串。在 v0.8 版本，非字符串的参数被静默忽略，在 v0.10 及以上版本，会抛出一个异常。
 
-Example:
+示例：
 
 ```js
 path.join('/foo', 'bar', 'baz/asdf', 'quux', '..')
-// returns '/foo/bar/baz/asdf'
+// 返回 '/foo/bar/baz/asdf'
 
 path.join('foo', {}, 'bar')
-// throws exception
+// 抛出异常
 TypeError: Arguments to path.join must be strings
 ```
 
-*Note:* If the arguments to `join` have zero-length strings, unlike other path
-        module functions, they will be ignored. If the joined path string is a
-        zero-length string then `'.'` will be returned, which represents the
-        current working directory.
+*注意：* 如果传入 `join` 的参数有 0 长度的字符串，与其他路径模块相关方法不同的是，这些 0 长度的字符串将被忽略。如果如果连接后的路径字符串是一个 0 长度的字符串，则会返回 `'.'`，代表当前的工作目录。
 
 ## path.normalize(p)
 
-Normalize a string path, taking care of `'..'` and `'.'` parts.
+规范化一个字符串路径，会关注 `'..'` 和 `'.'` 部分。
 
-When multiple slashes are found, they're replaced by a single one;
-when the path contains a trailing slash, it is preserved.
-On Windows backslashes are used.
+当发现多个斜杠时，会替换成一个斜杠；当路径结尾包含斜杠时，斜杠会被保留。Windows 平台下会使用反斜杠。
 
-Example:
+示例：
 
 ```js
 path.normalize('/foo/bar//baz/asdf/quux/..')
-// returns '/foo/bar/baz/asdf'
+// 返回 '/foo/bar/baz/asdf'
 ```
 
-*Note:* If the path string passed as argument is a zero-length string then `'.'`
-        will be returned, which represents the current working directory.
+*注意：* 如果传入的路径字符串时一个 0 长度的字符串，则会返回 `'.'`，代表当前的工作目录。
 
 ## path.parse(pathString)
 
-Returns an object from a path string.
+返回由路径字符串解析后的一个对象。
 
-An example on \*nix:
+\*nix 平台的一个例子：
 
 ```js
 path.parse('/home/user/dir/file.txt')
-// returns
+// 返回：
 // {
 //    root : "/",
 //    dir : "/home/user/dir",
@@ -223,11 +217,11 @@ path.parse('/home/user/dir/file.txt')
 // }
 ```
 
-An example on Windows:
+Windows 平台的一个例子：
 
 ```js
 path.parse('C:\\path\\dir\\index.html')
-// returns
+// 返回：
 // {
 //    root : "C:\\",
 //    dir : "C:\\path\\dir",
@@ -239,52 +233,43 @@ path.parse('C:\\path\\dir\\index.html')
 
 ## path.posix
 
-Provide access to aforementioned `path` methods but always interact in a posix
-compatible way.
+提供上述 `path` 方法的访问，但总是以 posix 兼容的方式交互。
 
 ## path.relative(from, to)
 
-Solve the relative path from `from` to `to`.
+解析从 `from` 到 `to` 的相对路径。
 
-At times we have two absolute paths, and we need to derive the relative
-path from one to the other.  This is actually the reverse transform of
-`path.resolve`, which means we see that:
+有时我们会有2个绝对路径，我们需要获得从一个路径到另一个路径的相对路径。这实际上是 `path.resolve` 的逆实现，这意味着我们可以看到：
 
 ```js
 path.resolve(from, path.relative(from, to)) == path.resolve(to)
 ```
 
-Examples:
+示例：
 
 ```js
 path.relative('C:\\orandea\\test\\aaa', 'C:\\orandea\\impl\\bbb')
-// returns '..\\..\\impl\\bbb'
+// 返回 '..\\..\\impl\\bbb'
 
 path.relative('/data/orandea/test/aaa', '/data/orandea/impl/bbb')
-// returns '../../impl/bbb'
+// 返回 '../../impl/bbb'
 ```
 
-*Note:* If the arguments to `relative` have zero-length strings then the current
-        working directory will be used instead of the zero-length strings. If
-        both the paths are the same then a zero-length string will be returned.
+*注意：* 如果传入 `relative` 的参数包括 0 长度的字符串，则会使用当前工作目录代替。如果 2 个参数路径一样，则会返回一个 0 长度字符串。
 
 ## path.resolve([from ...], to)
 
-Resolves `to` to an absolute path.
+将 `to` 解析成一个绝对路径。
 
-If `to` isn't already absolute `from` arguments are prepended in right to left
-order, until an absolute path is found. If after using all `from` paths still
-no absolute path is found, the current working directory is used as well. The
-resulting path is normalized, and trailing slashes are removed unless the path
-gets resolved to the root directory. Non-string `from` arguments are ignored.
+如果 `to` 不是绝对路径，会将 `from` 参数按照从右往左的次序依次添加到 `to` 的左边，知道找到一个绝对路径为止。如果使用所有的 `from` 路径后还是没找到绝对路径，将会使用当前工作目录。结果路径已经被规范化，并且除了根目录外结尾的斜杠也被移除。非字符串的 `from` 参数会被忽略。
 
-Another way to think of it is as a sequence of `cd` commands in a shell.
+另一种理解的思路是在 shell 中执行一系列的 `cd` 命令。
 
 ```js
 path.resolve('foo/bar', '/tmp/file/', '..', 'a/../subfile')
 ```
 
-Is similar to:
+类似于：
 
 ```
 cd foo/bar
@@ -294,47 +279,44 @@ cd a/../subfile
 pwd
 ```
 
-The difference is that the different paths don't need to exist and may also be
-files.
+差异之处在于 `resolve` 参数的路径不需要真实存在，并且还可以是文件。
 
-Examples:
+示例：
 
 ```js
 path.resolve('/foo/bar', './baz')
-// returns '/foo/bar/baz'
+// 返回 '/foo/bar/baz'
 
 path.resolve('/foo/bar', '/tmp/file/')
-// returns '/tmp/file'
+// 返回 '/tmp/file'
 
 path.resolve('wwwroot', 'static_files/png/', '../gif/image.gif')
-// if currently in /home/myself/node, it returns
+// 如果当前工作目录是 /home/myself/node，则会返回
 // '/home/myself/node/wwwroot/static_files/gif/image.gif'
 ```
 
-*Note:* If the arguments to `resolve` have zero-length strings then the current
-        working directory will be used instead of them.
+*注意：* 如果传入 `resolve` 的参数包括 0 长度的字符串，则会使用当前工作目录代替。
 
 ## path.sep
 
-The platform-specific file separator. `'\\'` or `'/'`.
+特定平台的文件分隔符，`'\\'` 或 `'/'`。
 
-An example on \*nix:
+\*nix 平台的一个例子：
 
 ```js
 'foo/bar/baz'.split(path.sep)
-// returns ['foo', 'bar', 'baz']
+// 返回 ['foo', 'bar', 'baz']
 ```
 
-An example on Windows:
+Windows 平台的一个例子：
 
 ```js
 'foo\\bar\\baz'.split(path.sep)
-// returns ['foo', 'bar', 'baz']
+// 返回 ['foo', 'bar', 'baz']
 ```
 
 ## path.win32
 
-Provide access to aforementioned `path` methods but always interact in a win32
-compatible way.
+提供上述 `path` 方法的访问，但总是以 win32 兼容的方式交互。
 
-[`path.parse`]: #path_path_parse_pathstring
+[`path.parse`]: #pathparsepathstring
