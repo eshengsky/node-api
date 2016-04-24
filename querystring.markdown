@@ -1,72 +1,63 @@
-# Query String
+## 目录
+* [查询字符串](#查询字符串)
+  * [querystring.escape](#querystringescape)
+  * [querystring.parse(str[, sep][, eq][, options])](#querystringparsestr-sep-eq-options)
+  * [querystring.stringify(obj[, sep][, eq][, options])](#querystringstringifyobj-sep-eq-options)
+  * [querystring.unescape](#querystringunescape)
 
-    Stability: 2 - Stable
+# 查询字符串
+
+    稳定性： 2 - 稳定
 
 <!--name=querystring-->
 
-This module provides utilities for dealing with query strings.
-It provides the following methods:
+该模块提供处理查询字符串的工具，有如下方法：
 
 ## querystring.escape
 
-The escape function used by `querystring.stringify`,
-provided so that it could be overridden if necessary.
+`querystring.stringify` 所使用的转义函数，必要时可被重写。
 
 ## querystring.parse(str[, sep][, eq][, options])
 
-Deserialize a query string to an object.
-Optionally override the default separator (`'&'`) and assignment (`'='`)
-characters.
+将查询字符串反序列化为一个对象。可选择重写默认的分隔符（`'&'`）和分配符（`'='`）。
 
-Options object may contain `maxKeys` property (equal to 1000 by default), it'll
-be used to limit processed keys. Set it to 0 to remove key count limitation.
+Options 对象可以包含 `maxKeys` 属性（默认值为 1000），它用来限制处理键的数量，设为 0 可以去除该限制。
 
-Options object may contain `decodeURIComponent` property (`querystring.unescape` by default),
-it can be used to decode a `non-utf8` encoding string if necessary.
+Options 对象还可以包含 `decodeURIComponent` 属性（默认值为 `querystring.unescape`），如果需要可以用来解码 `non-utf8` 编码的字符串。
 
-Example:
+示例：
 
 ```js
 querystring.parse('foo=bar&baz=qux&baz=quux&corge')
-// returns { foo: 'bar', baz: ['qux', 'quux'], corge: '' }
+// 返回 { foo: 'bar', baz: ['qux', 'quux'], corge: '' }
 
-// Suppose gbkDecodeURIComponent function already exists,
-// it can decode `gbk` encoding string
-querystring.parse('w=%D6%D0%CE%C4&foo=bar', null, null,
-  { decodeURIComponent: gbkDecodeURIComponent })
-// returns { w: '中文', foo: 'bar' }
+// 假定 gbkDecodeURIComponent 函数已经存在，这将会解码一个 `gbk` 编码的字符串。
+querystring.parse('w=%D6%D0%CE%C4&foo=bar', null, null, { decodeURIComponent: gbkDecodeURIComponent })
+// 返回 { w: '中文', foo: 'bar' }
 ```
 
 ## querystring.stringify(obj[, sep][, eq][, options])
 
-Serialize an object to a query string.
-Optionally override the default separator (`'&'`) and assignment (`'='`)
-characters.
+序列号一个对象到查询字符串。可选择重写默认的分隔符（`'&'`）和分配符（`'='`）。
 
-Options object may contain `encodeURIComponent` property (`querystring.escape` by default),
-it can be used to encode string with `non-utf8` encoding if necessary.
+Options 对象可以包含 `encodeURIComponent` 属性（默认值为 `querystring.escape`），如果需要可以用来编码字符串为 `non-utf8` 。
 
-Example:
+示例：
 
 ```js
 querystring.stringify({ foo: 'bar', baz: ['qux', 'quux'], corge: '' })
-// returns 'foo=bar&baz=qux&baz=quux&corge='
+// 返回 'foo=bar&baz=qux&baz=quux&corge='
 
 querystring.stringify({foo: 'bar', baz: 'qux'}, ';', ':')
-// returns 'foo:bar;baz:qux'
+// 返回 'foo:bar;baz:qux'
 
-// Suppose gbkEncodeURIComponent function already exists,
-// it can encode string with `gbk` encoding
-querystring.stringify({ w: '中文', foo: 'bar' }, null, null,
-  { encodeURIComponent: gbkEncodeURIComponent })
-// returns 'w=%D6%D0%CE%C4&foo=bar'
+// 假定 gbkEncodeURIComponent 函数已经存在，这会将字符串编码为 `gbk`。
+querystring.stringify({ w: '中文', foo: 'bar' }, null, null, { encodeURIComponent: gbkEncodeURIComponent })
+// 返回 'w=%D6%D0%CE%C4&foo=bar'
 ```
 
 ## querystring.unescape
 
-The unescape function used by `querystring.parse`,
-provided so that it could be overridden if necessary.
+`querystring.parse` 使用的反转义函数，必要时可被重写。
 
-It will try to use `decodeURIComponent` in the first place,
-but if that fails it falls back to a safer equivalent that
-doesn't throw on malformed URLs.
+它将首先尝试使用 `decodeURIComponent` ，如果失败则回滚到一个更安全的等效值，而不会抛出一个错误格式的 URL。
