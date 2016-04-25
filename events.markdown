@@ -1,25 +1,16 @@
-# Events
+# 事件
 
-    Stability: 2 - Stable
+    稳定性： 2 - 稳定
 
 <!--type=module-->
 
-Much of the Node.js core API is built around an idiomatic asynchronous
-event-driven architecture in which certain kinds of objects (called "emitters")
-periodically emit named events that cause Function objects ("listeners") to be
-called.
+Node.js 的很多核心 API 都是围绕一个惯用的异步事件驱动架构构建的，某些对象类型（称为"emitters 分发器"）会定期分发命名事件，这将导致函数对象（"监听器 listeners"）被调用。
 
-For instance: a [`net.Server`][] object emits an event each time a peer
-connects to it; a [`fs.ReadStream`][] emits an event when the file is opened;
-a [stream][] emits an event whenever data is available to be read.
+例如：一个 [`net.Server`][] 对象每当接收到一个连接就会分发（emit）一个事件；一个 [`fs.ReadStream`][] 对象会在文件被打开时分发一个事件；一个 [stream][] 对象会在数据读取可用时分发一个事件。
 
-All objects that emit events are instances of the `EventEmitter` class. These
-objects expose an `eventEmitter.on()` function that allows one or more
-Functions to be attached to named events emitted by the object. Typically,
-event names are camel-cased strings but any valid JavaScript property key
-can be used.
+所有能够分发事件的对象都是 `EventEmitter` 类的实例。这些对象会暴露一个 `eventEmitter.on()` 方法允许一个或多个函数附加到由该对象分发的命名事件上。一般来说，事件名称是驼峰字符串，但其实任何合法的 JavaScript 属性键都可以被使用。
 
-When the `EventEmitter` object emits an event, all of the Functions attached
+当 `EventEmitter` 对象分发一个事件，所有的附加到该事件的函数object emits an event, all of the Functions attached
 to that specific event are called _synchronously_. Any values returned by the
 called listeners are _ignored_ and will be discarded.
 
