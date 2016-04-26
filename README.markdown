@@ -5,6 +5,7 @@ _翻译的过程也是学习和系统性梳理的过程~_
 ###目录  
 * [关于本文档](documentation.markdown)
 * [概要](synopsis.markdown)
+* [事件（Events）](events.markdown)
 * [文件系统（File System）](fs.markdown)
 * [HTTP](http.markdown)
 * [路径（Path）](path.markdown)
