@@ -1,22 +1,40 @@
+## 目录
+* [事件](#事件)
+  * [传递参数和 `this` 给监听器](#传递参数和-this-给监听器)
+  * [异步 vs 同步](#异步-vs-同步)
+  * [仅触发一次的处理事件](#仅触发一次的处理事件)
+  * [错误事件](#错误事件)
+  * [类： EventEmitter](#类-eventemitter)
+    * [事件： 'newListener'](#事件-newlistener)
+    * [事件： 'removeListener'](#事件-removelistener)
+    * [EventEmitter.listenerCount(emitter, eventName)](#eventemitterlistenercountemitter-eventname)
+    * [EventEmitter.defaultMaxListeners](#eventemitterdefaultmaxlisteners)
+    * [emitter.addListener(eventName, listener)](#emitteraddlistenereventname-listener)
+    * [emitter.emit(eventName[, arg1][, arg2][, ...])](#emitteremiteventname-arg1-arg2-)
+    * [emitter.getMaxListeners()](#emittergetmaxlisteners)
+    * [emitter.listenerCount(eventName)](#emitterlistenercounteventname)
+    * [emitter.listeners(eventName)](#emitterlistenerseventname)
+    * [emitter.on(eventName, listener)](#emitteroneventname-listener)
+    * [emitter.once(eventName, listener)](#emitteronceeventname-listener)
+    * [emitter.removeAllListeners([eventName])](#emitterremovealllistenerseventname)
+    * [emitter.removeListener(eventName, listener)](#emitterremovelistenereventname-listener)
+    * [emitter.setMaxListeners(n)](#emittersetmaxlistenersn)
+
 # 事件
 
     稳定性： 2 - 稳定
 
 <!--type=module-->
 
-Node.js 的很多核心 API 都是围绕一个惯用的异步事件驱动架构构建的，某些对象类型（称为"emitters 分发器"）会定期分发命名事件，这将导致函数对象（"监听器 listeners"）被调用。
+Node.js 的很多核心 API 都是围绕一个惯用的异步事件驱动架构构建的，某些对象类型（称为"emitters 分发器"）会定期分发命名事件，这将导致函数对象（"listeners 监听器"）被调用。
 
 例如：一个 [`net.Server`][] 对象每当接收到一个连接就会分发（emit）一个事件；一个 [`fs.ReadStream`][] 对象会在文件被打开时分发一个事件；一个 [stream][] 对象会在数据读取可用时分发一个事件。
 
 所有能够分发事件的对象都是 `EventEmitter` 类的实例。这些对象会暴露一个 `eventEmitter.on()` 方法允许一个或多个函数附加到由该对象分发的命名事件上。一般来说，事件名称是驼峰字符串，但其实任何合法的 JavaScript 属性键都可以被使用。
 
-当 `EventEmitter` 对象分发一个事件，所有的附加到该事件的函数object emits an event, all of the Functions attached
-to that specific event are called _synchronously_. Any values returned by the
-called listeners are _ignored_ and will be discarded.
+当 `EventEmitter` 对象分发一个事件，所有的附加到该事件的函数都会被_同步_调用。调用的监听器返回的任何值将被_忽略_并丢弃。
 
-The following example shows a simple `EventEmitter` instance with a single
-listener. The `eventEmitter.on()` method is used to register listeners, while
-the `eventEmitter.emit()` method is used to trigger the event.
+接下来的例子展示了一个简单的带监听器的 `EventEmitter` 实例。`eventEmitter.on()` 方法用来注册监听器，`eventEmitter.emit()` 方法用来触发该监听器事件。
 
 ```js
 const EventEmitter = require('events');
@@ -29,15 +47,12 @@ util.inherits(MyEmitter, EventEmitter);
 
 const myEmitter = new MyEmitter();
 myEmitter.on('event', () => {
-  console.log('an event occurred!');
+  console.log('触发了一个事件！');
 });
 myEmitter.emit('event');
 ```
 
-Any object can become an `EventEmitter` through inheritance. The example above
-uses the traditional Node.js style prototypical inheritance using
-the `util.inherits()` method. It is, however, possible to use ES6 classes as
-well:
+任何对象都可以通过继承成为一个 `EventEmitter` 对象。上面的例子通过 `util.inherits()` 方法使用了传统 Node.js 风格的原型继承。当然也可以使用 ES6 的类继承：
 
 ```js
 const EventEmitter = require('events');
@@ -46,18 +61,14 @@ class MyEmitter extends EventEmitter {}
 
 const myEmitter = new MyEmitter();
 myEmitter.on('event', () => {
-  console.log('an event occurred!');
+  console.log('触发了一个事件！');
 });
 myEmitter.emit('event');
 ```
 
-## Passing arguments and `this` to listeners
+## 传递参数和 `this` 给监听器
 
-The `eventEmitter.emit()` method allows an arbitrary set of arguments to be
-passed to the listener functions. It is important to keep in mind that when an
-ordinary listener function is called by the `EventEmitter`, the standard `this`
-keyword is intentionally set to reference the `EventEmitter` to which the
-listener is attached.
+`eventEmitter.emit()` 方法允许传递任意参数到监听器函数。重要的是要记住，当一个普通的监听器函数通过 `EventEmitter` 被调用，标准 `this` 关键字会被特意设置为指向监听器所附加的 `EventEmitter` 的引用。
 
 ```js
 const myEmitter = new MyEmitter();
@@ -66,15 +77,14 @@ myEmitter.on('event', function(a, b) {
     // Prints:
     //   a b MyEmitter {
     //     domain: null,
-    //     _events: { event: [Function] },
+    //     _events: { 事件： [Function] },
     //     _eventsCount: 1,
     //     _maxListeners: undefined }
 });
 myEmitter.emit('event', 'a', 'b');
 ```
 
-It is possible to use ES6 Arrow Functions as listeners, however, when doing so,
-the `this` keyword will no longer reference the `EventEmitter` instance:
+也可以使用 ES6 的箭头函数作为监听器，然而，如果这样做的话 `this` 关键字将不再指向 `EventEmitter` 实例的引用：
 
 ```js
 const myEmitter = new MyEmitter();
@@ -85,28 +95,23 @@ myEmitter.on('event', (a, b) => {
 myEmitter.emit('event', 'a', 'b');
 ```
 
-## Asynchronous vs. Synchronous
+## 异步 vs 同步
 
-The `EventListener` calls all listeners synchronously in the order in which
-they were registered. This is important to ensure the proper sequencing of
-events and to avoid race conditions or logic errors. When appropriate,
-listener functions can switch to an asynchronous mode of operation using
-the `setImmediate()` or `process.nextTick()` methods:
+`EventListener` 会按照监听器当初注册时的顺序同步调用它们。这对于确保适当的排序以及避免竞态条件或逻辑错误非常重要。当在恰当的时候，也可以使用 `setImmediate()` 或 `process.nextTick()` 方法将监听器函数切换到异步操作模式。
 
 ```js
 const myEmitter = new MyEmitter();
 myEmitter.on('event', (a, b) => {
   setImmediate(() => {
-    console.log('this happens asynchronously');
+    console.log('异步触发');
   });
 });
 myEmitter.emit('event', 'a', 'b');
 ```
 
-## Handling events only once
+## 仅触发一次的处理事件
 
-When a listener is registered using the `eventEmitter.on()` method, that
-listener will be invoked _every time_ the named event is emitted.
+当监听器是通过 `eventEmitter.on()` 方法注册的，那么每一次分发该命名事件时该监听器都会被调用。
 
 ```js
 const myEmitter = new MyEmitter();
@@ -115,13 +120,12 @@ myEmitter.on('event', () => {
   console.log(++m);
 });
 myEmitter.emit('event');
-  // Prints: 1
+  // 打印：1
 myEmitter.emit('event');
-  // Prints: 2
+  // 打印：2
 ```
 
-Using the `eventEmitter.once()` method, it is possible to register a listener
-that is immediately unregistered after it is called.
+使用 `eventEmitter.once()` 方法注册一个监听器可以让该监听器被调用之后立即解除注册。
 
 ```js
 const myEmitter = new MyEmitter();
@@ -130,88 +134,73 @@ myEmitter.once('event', () => {
   console.log(++m);
 });
 myEmitter.emit('event');
-  // Prints: 1
+  // 打印：1
 myEmitter.emit('event');
-  // Ignored
+  // 被忽略
 ```
 
-## Error events
+## 错误事件
 
-When an error occurs within an `EventEmitter` instance, the typical action is
-for an `'error'` event to be emitted. These are treated as a special case
-within Node.js.
+当在 `EventEmitter` 实例中发生了一个错误，典型的行为是分发一个 `'error'` 事件。这在 Node.js 中被视作一种特殊情况进行处理。
 
-If an `EventEmitter` does _not_ have at least one listener registered for the
-`'error'` event, and an `'error'` event is emitted, the error is thrown, a
-stack trace is printed, and the Node.js process exits.
+如果一个 `EventEmitter` _没有_ 在 `'error'` 事件上注册任何监听器，但又分发了一个 `'error'` 事件，则会抛出异常，打印错误堆栈信息，同时退出 Node.js 进程。
 
 ```js
 const myEmitter = new MyEmitter();
 myEmitter.emit('error', new Error('whoops!'));
-  // Throws and crashes Node.js
+  // 抛出异常并退出 Node.js
 ```
 
-To guard against crashing the Node.js process, developers can either register
-a listener for the `process.on('uncaughtException')` event or use the
-[`domain`][] module (_Note, however, that the `domain` module has been
-deprecated_).
+为了防范 Node.js 进程崩溃，开发者可以在 `process.on('uncaughtException')` 事件上注册一个监听器，或者使用 [`domain`][] 模块（_注意 `domain` 模块已被弃用_）。
 
 ```js
 const myEmitter = new MyEmitter();
 
 process.on('uncaughtException', (err) => {
-  console.log('whoops! there was an error');
+  console.log('哎呀！有一个错误！');
 });
 
 myEmitter.emit('error', new Error('whoops!'));
-  // Prints: whoops! there was an error
+  // 打印：哎呀！有一个错误！
 ```
 
-As a best practice, developers should always register listeners for the
-`'error'` event:
+作为一项最佳实践，开发者应该总是为 `'error'` 事件注册监听器：
 
 ```js
 const myEmitter = new MyEmitter();
 myEmitter.on('error', (err) => {
-  console.log('whoops! there was an error');
+  console.log('哎呀！有一个错误！');
 });
 myEmitter.emit('error', new Error('whoops!'));
-  // Prints: whoops! there was an error
+  // 打印：哎呀！有一个错误！
 ```
 
-## Class: EventEmitter
+## 类： EventEmitter
 
-The `EventEmitter` class is defined and exposed by the `events` module:
+`EventEmitter` 类是由 `events` 模块定义并公开：
 
 ```js
 const EventEmitter = require('events');
 ```
 
-All EventEmitters emit the event `'newListener'` when new listeners are
-added and `'removeListener'` when a listener is removed.
+当添加新的监听器时，所有的 EventEmitters 都会分发 `'newListener'` 事件，当监听器会移除时，会分发 `'removeListener'` 事件。
 
-### Event: 'newListener'
+### 事件： 'newListener'
 
-* `eventName` {String|Symbol} The name of the event being listened for
-* `listener` {Function} The event handler function
+* `eventName` {String|Symbol} 监听的事件的名称
+* `listener` {Function} 事件处理函数
 
-The `EventEmitter` instance will emit it's own `'newListener'` event *before*
-a listener is added to it's internal array of listeners.
+`EventEmitter` 实例会在将一个监听器添加到它内部的监听器数组*之前*分发 `'newListener'` 事件。
 
-Listeners registered for the `'newListener'` event will be passed the event
-name and a reference to the listener being added.
+`'newListener'` 事件上注册的监听器会传递事件名称和被添加的监听器的引用作为参数。
 
-The fact that the event is triggered before adding the listener has a subtle
-but important side effect: any *additional* listeners registered to the same
-`name` *within* the `'newListener'` callback will be inserted *before* the
-listener that is in the process of being added.
-
+`'newListener'` 事件会在添加其它监听器之前就被触发，这带来一个微妙但很重要的副作用：在 `'newListener'` 回调*内部*注册的具有相同 `name` 的监听器会添加到同名监听器之前。
 ```js
 const myEmitter = new MyEmitter();
-// Only do this once so we don't loop forever
+// 只执行一次
 myEmitter.once('newListener', (event, listener) => {
   if (event === 'event') {
-    // Insert a new listener in front
+    // 在前面插入一个新的监听器
     myEmitter.on('event', () => {
       console.log('B');
     });
@@ -221,160 +210,128 @@ myEmitter.on('event', () => {
   console.log('A');
 });
 myEmitter.emit('event');
-  // Prints:
+  // 打印：
   //   B
   //   A
 ```
 
-### Event: 'removeListener'
+### 事件： 'removeListener'
 
-* `eventName` {String|Symbol} The event name
-* `listener` {Function} The event handler function
+* `eventName` {String|Symbol} 事件名称
+* `listener` {Function} 事件处理函数
 
-The `'removeListener'` event is emitted *after* a listener is removed.
+`'removeListener'` 事件会在一个监听器被移除*之后*分发。
 
 ### EventEmitter.listenerCount(emitter, eventName)
 
-    Stability: 0 - Deprecated: Use [`emitter.listenerCount()`][] instead.
+    稳定性： 0 - 弃用，使用 [`emitter.listenerCount()`][] 代替。
 
-A class method that returns the number of listeners for the given `eventName`
-registered on the given `emitter`.
+一个类方法，会返回给定 `emitter` 上注册的 `eventName` 监听器的数量。
 
 ```js
 const myEmitter = new MyEmitter();
 myEmitter.on('event', () => {});
 myEmitter.on('event', () => {});
 console.log(EventEmitter.listenerCount(myEmitter, 'event'));
-  // Prints: 2
+  // 打印： 2
 ```
 
 ### EventEmitter.defaultMaxListeners
 
-By default, a maximum of `10` listeners can be registered for any single
-event. This limit can be changed for individual `EventEmitter` instances
-using the [`emitter.setMaxListeners(n)`][] method. To change the default
-for *all* `EventEmitter` instances, the `EventEmitter.defaultMaxListeners`
-property can be used.
+默认情况下任何单个事件最多可以注册 `10` 个监听器。该限制可以在单个的 `EventEmitter` 实例上使用 [`emitter.setMaxListeners(n)`][] 方法进行修改。要修改*所有* `EventEmitter` 实例的默认值，可以使用 `EventEmitter.defaultMaxListeners` 属性。
 
-Take caution when setting the `EventEmitter.defaultMaxListeners` because the
-change effects *all* `EventEmitter` instances, including those created before
-the change is made. However, calling [`emitter.setMaxListeners(n)`][] still has
-precedence over `EventEmitter.defaultMaxListeners`.
+请注意修改 `EventEmitter.defaultMaxListeners` 会影响到*所有*的 `EventEmitter` 实例，包括哪些在这之前创建的实例。然而，[`emitter.setMaxListeners(n)`][] 优先级依然高于 `EventEmitter.defaultMaxListeners`。
 
-Note that this is not a hard limit. The `EventEmitter` instance will allow
-more listeners to be added but will output a trace warning to stderr indicating
-that a `possible EventEmitter memory leak` has been detected. For any single
-`EventEmitter`, the `emitter.getMaxListeners()` and `emitter.setMaxListeners()`
-methods can be used to temporarily avoid this warning:
+注意这不是一个硬性限制，`EventEmitter` 实例允许添加更多的监听器，但是会输出一个追踪警告的标准错误，表示检测到 `possible EventEmitter memory leak`（可能的 EventEmitter 内存泄漏）。对任何一个 `EventEmitter`，`emitter.getMaxListeners()` 和 `emitter.setMaxListeners()` 方法可以用来临时调整上限值以忽略该警告。
 
 ```js
 emitter.setMaxListeners(emitter.getMaxListeners() + 1);
 emitter.once('event', () => {
-  // do stuff
+  // 做些事情
   emitter.setMaxListeners(Math.max(emitter.getMaxListeners() - 1, 0));
 });
 ```
 
 ### emitter.addListener(eventName, listener)
 
-Alias for `emitter.on(eventName, listener)`.
+[`emitter.on(eventName, listener)`][] 的别名。
 
 ### emitter.emit(eventName[, arg1][, arg2][, ...])
 
-Synchronously calls each of the listeners registered for the event named
-`eventName`, in the order they were registered, passing the supplied arguments
-to each.
+同步调用名为 `eventName` 的事件上注册的每一个监听器，会按照监听器注册时的顺序执行，并给每个监听器传入提供的参数。
 
-Returns `true` if the event had listeners, `false` otherwise.
+如果该事件有监听器则返回 `true`，否则返回 `false`。
 
 ### emitter.getMaxListeners()
 
-Returns the current max listener value for the `EventEmitter` which is either
-set by [`emitter.setMaxListeners(n)`][] or defaults to
-[`EventEmitter.defaultMaxListeners`][].
+返回当前由 [`emitter.setMaxListeners(n)`][] 或 [`EventEmitter.defaultMaxListeners`][] 设置的最大的监听器上限值。
 
 ### emitter.listenerCount(eventName)
 
-* `eventName` {Value} The name of the event being listened for
+* `eventName` {Value} 被监听事件的名称
 
-Returns the number of listeners listening to the event named `eventName`.
+返回正在监听 `eventName` 事件的监听器的数量。
 
 ### emitter.listeners(eventName)
 
-Returns a copy of the array of listeners for the event named `eventName`.
+返回 `eventName` 事件上监听器数组的一个副本。
 
 ```js
 server.on('connection', (stream) => {
-  console.log('someone connected!');
+  console.log('产生了一个连接！');
 });
 console.log(util.inspect(server.listeners('connection')));
-  // Prints: [ [Function] ]
+  // 打印： [ [Function] ]
 ```
 
 ### emitter.on(eventName, listener)
 
-Adds the `listener` function to the end of the listeners array for the
-event named `eventName`. No checks are made to see if the `listener` has
-already been added. Multiple calls passing the same combination of `eventName`
-and `listener` will result in the `listener` being added, and called, multiple
-times.
+给 `eventName` 事件添加 `listener` 监听器函数到监听器数组的末尾。不会检查 `listener` 是否已被添加过。重复传入相同的 `eventName` 和 `listener` 也将导致 `listener` 被重复地添加和调用。
 
 ```js
 server.on('connection', (stream) => {
-  console.log('someone connected!');
+  console.log('产生了一个连接！');
 });
 ```
 
-Returns a reference to the `EventEmitter` so calls can be chained.
+返回一个 `EventEmitter` 的引用以便链式调用。
 
 ### emitter.once(eventName, listener)
 
-Adds a **one time** `listener` function for the event named `eventName`. This
-listener is invoked only the next time `eventName` is triggered, after which
-it is removed.
+给 `eventName` 事件添加一个**一次性**的 `listener` 监听器函数。该监听器仅会在下一次的 `eventName` 事件被触发时调用，然后就会被移除。
 
 ```js
 server.once('connection', (stream) => {
-  console.log('Ah, we have our first user!');
+  console.log('啊，我们有了第一个用户了！');
 });
 ```
 
-Returns a reference to the `EventEmitter` so calls can be chained.
+返回一个 `EventEmitter` 的引用以便链式调用。
 
 ### emitter.removeAllListeners([eventName])
 
-Removes all listeners, or those of the specified `eventName`.
+移除所有的监听器，或者指定 `eventName` 事件上的所有监听器。
 
-Note that it is bad practice to remove listeners added elsewhere in the code,
-particularly when the `EventEmitter` instance was created by some other
-component or module (e.g. sockets or file streams).
+请注意移除代码中别的地方的监听器是一个不好的实践，尤其当 `EventEmitter` 实例是由其他组件或模块创建的（比如 sockets 套接字或 file streams 文件流）。
 
-Returns a reference to the `EventEmitter` so calls can be chained.
+返回一个 `EventEmitter` 的引用以便链式调用。
 
 ### emitter.removeListener(eventName, listener)
 
-Removes the specified `listener` from the listener array for the event named
-`eventName`.
+从 `eventName` 事件的监听器数组中移除指定的 `listener` 监听器。
 
 ```js
 var callback = (stream) => {
-  console.log('someone connected!');
+  console.log('产生了一个连接！');
 };
 server.on('connection', callback);
 // ...
 server.removeListener('connection', callback);
 ```
 
-`removeListener` will remove, at most, one instance of a listener from the
-listener array. If any single listener has been added multiple times to the
-listener array for the specified `eventName`, then `removeListener` must be
-called multiple times to remove each instance.
+`removeListener` 将会从监听器数组中移除至多一个监听器的实例。如果任何一个监听器被多次添加到了特定的 `eventName` 事件的监听器数组中，那么同样需要多次调用 `removeListener` 来逐个移除它们。
 
-Note that once an event has been emitted, all listeners attached to it at the
-time of emitting will be called in order. This implies that any `removeListener()`
-or `removeAllListeners()` calls *after* emitting and *before* the last listener
-finishes execution will not remove them from `emit()` in progress. Subsequent
-events will behave as expected.
+请注意一旦分发了一个事件，所有附加到该事件上的监听器会同时依次被调用。这意味着在事件分发*之后*、最后一个监听器完成执行*之前*调用任何 `removeListener()` 或 `removeAllListeners()` 将不会移除进行中的监听器。之后的事件将遵循预期行为。
 
 ```js
 const myEmitter = new MyEmitter();
@@ -392,44 +349,36 @@ myEmitter.on('event', callbackA);
 
 myEmitter.on('event', callbackB);
 
-// callbackA removes listener callbackB but it will still be called.
-// Internal listener array at time of emit [callbackA, callbackB]
+// callbackA 移除了 callbackB，但 callbackB 依然会被调用.
+// 分发事件依次调用内部监听器数组 [callbackA, callbackB]
 myEmitter.emit('event');
-  // Prints:
+  // 打印：
   //   A
   //   B
 
-// callbackB is now removed.
-// Internal listener array [callbackA]
+// callbackB 已被移除。
+// 内部监听器数组 [callbackA]
 myEmitter.emit('event');
-  // Prints:
+  // 打印：
   //   A
 
 ```
 
-Because listeners are managed using an internal array, calling this will
-change the position indices of any listener registered *after* the listener
-being removed. This will not impact the order in which listeners are called,
-but it will means that any copies of the listener array as returned by
-the `emitter.listeners()` method will need to be recreated.
+因为监听器是被一个内部数组管理的，调用该方法将会改变移除监听器*之后*的注册的监听器的位置索引。这不会影响监听器调用时的顺序，但 `emitter.listeners()` 方法返回的任何监听器数组都需要被重建。
 
-Returns a reference to the `EventEmitter` so calls can be chained.
+返回一个 `EventEmitter` 的引用以便链式调用。
 
 ### emitter.setMaxListeners(n)
 
-By default EventEmitters will print a warning if more than `10` listeners are
-added for a particular event. This is a useful default that helps finding
-memory leaks. Obviously, not all events should be limited to just 10 listeners.
-The `emitter.setMaxListeners()` method allows the limit to be modified for this
-specific `EventEmitter` instance. The value can be set to `Infinity` (or `0`)
-for to indicate an unlimited number of listeners.
+默认情况下如果在一个特定的事件上添加超过 `10` 个监听器 EventEmitters 将会打印一个警告信息。该默认设置有助于发现内存泄漏。显然并非所有的事件都需要限制 10 个监听器。`emitter.setMaxListeners()` 方法允许在指定 `EventEmitter` 实例上修改该限制。值可以被设为 `Infinity`（或 `0`）表示无限制。
 
-Returns a reference to the `EventEmitter` so calls can be chained.
+返回一个 `EventEmitter` 的引用以便链式调用。
 
-[`net.Server`]: net.html#net_class_net_server
-[`fs.ReadStream`]: fs.html#fs_class_fs_readstream
-[`emitter.setMaxListeners(n)`]: #events_emitter_setmaxlisteners_n
-[`EventEmitter.defaultMaxListeners`]: #events_eventemitter_defaultmaxlisteners
-[`emitter.listenerCount()`]: #events_emitter_listenercount_event
-[`domain`]: domain.html
-[stream]: stream.html
+[`net.Server`]: net.markdown#类-netserver
+[`fs.ReadStream`]: fs.markdown#类-fsreadstream
+[`emitter.on(eventName, listener)`]: #emitteroneventname-listener
+[`emitter.setMaxListeners(n)`]: #emittersetmaxlistenersn
+[`EventEmitter.defaultMaxListeners`]: #事件-eventemitterdefaultmaxlisteners
+[`emitter.listenerCount()`]: #emitterlistenercounteventname
+[`domain`]: domain.markdown
+[stream]: stream.markdown
