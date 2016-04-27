@@ -1,17 +1,35 @@
-# Global Objects
+## 目录
+* [全局对象](#全局对象)
+  * [类： Buffer](#类-buffer)
+  * [__dirname](#__dirname)
+  * [__filename](#__filename)
+  * [clearInterval(t)](#clearintervalt)
+  * [clearTimeout(t)](#cleartimeoutt)
+  * [console](#console)
+  * [exports](#exports)
+  * [global](#global)
+  * [module](#module)
+  * [process](#process)
+  * [require()](#require)
+    * [require.cache](#requirecache)
+    * [require.extensions](#requireextensions)
+    * [require.resolve()](#requireresolve)
+  * [setInterval(cb, ms)](#setintervalcb-ms)
+  * [setTimeout(cb, ms)](#settimeoutcb-ms)
+
+# 全局对象
 
 <!-- type=misc -->
 
-These objects are available in all modules. Some of these objects aren't
-actually in the global scope but in the module scope - this will be noted.
+这些对象在所有模块中都可直接使用。这当中的某些对象并不是真正在全局作用域里，而是在模块作用域里，这会被标注出来。
 
-## Class: Buffer
+## 类： Buffer
 
 <!-- type=global -->
 
 * {Function}
 
-Used to handle binary data. See the [buffer section][].
+用来处理二进制数据。参见 [buffer section][]。
 
 ## \_\_dirname
 
@@ -19,16 +37,16 @@ Used to handle binary data. See the [buffer section][].
 
 * {String}
 
-The name of the directory that the currently executing script resides in.
+当前执行脚本所在的目录名。
 
-Example: running `node example.js` from `/Users/mjr`
+示例：在 `/Users/mjr` 目录中执行 `node example.js` 脚本 
 
 ```js
 console.log(__dirname);
 // /Users/mjr
 ```
 
-`__dirname` isn't actually a global but rather local to each module.
+`__dirname` 实际上不是全局的，而是各个本地模块有效。
 
 ## \_\_filename
 
@@ -36,33 +54,28 @@ console.log(__dirname);
 
 * {String}
 
-The filename of the code being executed.  This is the resolved absolute path
-of this code file.  For a main program this is not necessarily the same
-filename used in the command line.  The value inside a module is the path
-to that module file.
+当前被执行的代码的文件名。这是该代码文件解析后的绝对路径。对于一个主程序，和命令行中未必会使用相同的文件名。模块中的值是模块文件的路径。
 
-Example: running `node example.js` from `/Users/mjr`
+示例：在 `/Users/mjr` 目录中执行 `node example.js` 脚本 
 
 ```js
 console.log(__filename);
 // /Users/mjr/example.js
 ```
 
-`__filename` isn't actually a global but rather local to each module.
+`__filename` 实际上不是全局的，而是各个本地模块有效。
 
 ## clearInterval(t)
 
-Stop a timer that was previously created with [`setInterval()`][]. The callback
-will not execute.
+停止一个通过 [`setInterval()`][] 创建的定时器。定时器的回调将不会再被执行。
 
 <!--type=global-->
 
-The timer functions are global variables. See the [timers][] section.
+timer 函数是全局变量。参见 [timers][] 章节。
 
 ## clearTimeout(t)
 
-Stop a timer that was previously created with [`setTimeout()`][]. The callback will
-not execute.
+停止一个通过 [`setTimeout()`][] 创建的定时器。定时器的回调将不会再被执行。
 
 ## console
 
@@ -70,30 +83,25 @@ not execute.
 
 * {Object}
 
-Used to print to stdout and stderr. See the [`console`][] section.
+用来打印标准输出和标准错误。参见 [`console`][] 章节。
 
 ## exports
 
 <!-- type=var -->
 
-A reference to the `module.exports` that is shorter to type.
-See [module system documentation][] for details on when to use `exports` and
-when to use `module.exports`.
+`module.exports` 的引用，是它的简短书写形式。查看 [module system documentation][] 了解何时使用 `exports` 何时使用 `module.exports`。
 
-`exports` isn't actually a global but rather local to each module.
+`exports` 实际上不是全局的，而是各个本地模块有效。
 
-See the [module system documentation][] for more information.
+更多信息参见 [module system documentation][]。
 
 ## global
 
 <!-- type=global -->
 
-* {Object} The global namespace object.
+* {Object} 全局命名空间对象。
 
-In browsers, the top-level scope is the global scope. That means that in
-browsers if you're in the global scope `var something` will define a global
-variable. In Node.js this is different. The top-level scope is not the global
-scope; `var something` inside an Node.js module will be local to that module.
+在浏览器中，顶层作用域就是全局作用域。这意味着如果你在全局作用域中 `var something` ，将会定义一个全局变量。而 Node.js 中不同，顶层作用域不是全局作用域，在一个 Node.js 模块中定义变量 `var something` ，变量的作用域只是该模块。
 
 ## module
 
@@ -101,13 +109,11 @@ scope; `var something` inside an Node.js module will be local to that module.
 
 * {Object}
 
-A reference to the current module. In particular
-`module.exports` is used for defining what a module exports and makes
-available through `require()`.
+当前模块的一个引用。`module.exports` 可以用来定义模块的输出内容，通过 `require()` 就可以获取到它们。
 
-`module` isn't actually a global but rather local to each module.
+`module` 实际上不是全局的，而是各个本地模块有效。
 
-See the [module system documentation][] for more information.
+更多信息参见 [module system documentation][]。
 
 ## process
 
@@ -115,7 +121,7 @@ See the [module system documentation][] for more information.
 
 * {Object}
 
-The process object. See the [`process` object][] section.
+进程对象。参见 [`process` object][] 章节。
 
 ## require()
 
@@ -123,73 +129,57 @@ The process object. See the [`process` object][] section.
 
 * {Function}
 
-To require modules. See the [Modules][] section.  `require` isn't actually a
-global but rather local to each module.
+引入模块。参见 [Modules][] 章节。`require` 实际上不是全局的，而是各个本地模块有效。
 
 ### require.cache
 
 * {Object}
 
-Modules are cached in this object when they are required. By deleting a key
-value from this object, the next `require` will reload the module.
+引入模块时会将模块缓存到该对象。通过删除该对象的键值，下一次调用 `require` 将会重新加载该模块。
 
 ### require.extensions
 
-    Stability: 0 - Deprecated
+    稳定性： 0 - 弃用
 
 * {Object}
 
-Instruct `require` on how to handle certain file extensions.
+指示 `require` 如何处理特定文件的扩展名。
 
-Process files with the extension `.sjs` as `.js`:
+将 `.sjs` 文件按照 `.js` 文件进行处理：
 
 ```js
 require.extensions['.sjs'] = require.extensions['.js'];
 ```
 
-**Deprecated**  In the past, this list has been used to load
-non-JavaScript modules into Node.js by compiling them on-demand.
-However, in practice, there are much better ways to do this, such as
-loading modules via some other Node.js program, or compiling them to
-JavaScript ahead of time.
+**弃用**  在过去这个列表被用来加载按需编译的非 JavaScript 的模块到 Node.js 中。然而，事实上有很多更好的解决方案，例如通过某个其它 Node.js 程序来加载模块，或者将模块预先编译成 JavaScript。
 
-Since the Module system is locked, this feature will probably never go
-away.  However, it may have subtle bugs and complexities that are best
-left untouched.
+由于模块系统已被锁定，该功能可能永远不会被移除。然而，它可能会有一些细微的 bug 和复杂性，最好不要去使用。
 
 ### require.resolve()
 
-Use the internal `require()` machinery to look up the location of a module,
-but rather than loading the module, just return the resolved filename.
+使用内部的 `require()` 机制查找模块位置，但不会加载模块，仅仅返回解析后的文件名。
 
 ## setInterval(cb, ms)
 
-Run callback `cb` repeatedly every `ms` milliseconds. Note that the actual
-interval may vary, depending on external factors like OS timer granularity and
-system load. It's never less than `ms` but it may be longer.
+每隔 `ms` 毫秒调用一次 `cb` 回调函数。请注意，实际的间隔时间可能会改变，这取决于一些外部因素，例如操作系统的定时器粒度和系统负载。实际间隔时间一定不会比 `ms` 短，只会相等或更长。
 
-The interval must be in the range of 1-2,147,483,647 inclusive. If the value is
-outside that range, it's changed to 1 millisecond. Broadly speaking, a timer
-cannot span more than 24.8 days.
+间隔时间必须是 1 - 2,147,483,647 之间的值。如果超出了这个范围，会被修正为 1 毫秒。一般来说，一个定时器不应该超过 24.8 天。
 
-Returns an opaque value that represents the timer.
+返回一个代表该定时器的句柄值。
 
 ## setTimeout(cb, ms)
 
-Run callback `cb` after *at least* `ms` milliseconds. The actual delay depends
-on external factors like OS timer granularity and system load.
+在*至少* `ms` 毫秒后调用 `cb` 回调函数。实际的延迟取决于一些外部因素，例如操作系统的定时器粒度和系统负载。
 
-The timeout must be in the range of 1-2,147,483,647 inclusive. If the value is
-outside that range, it's changed to 1 millisecond. Broadly speaking, a timer
-cannot span more than 24.8 days.
+延迟时间必须是 1 - 2,147,483,647 之间的值。如果超出了这个范围，会被修正为 1 毫秒。一般来说，一个定时器不应该超过 24.8 天。
 
-Returns an opaque value that represents the timer.
+返回一个代表该定时器的句柄值。
 
-[`console`]: console.html
-[`process` object]: process.html#process_process
-[`setInterval()`]: #globals_setinterval_cb_ms
-[`setTimeout()`]: #globals_settimeout_cb_ms
-[buffer section]: buffer.html
-[module system documentation]: modules.html
-[Modules]: modules.html#modules_modules
-[timers]: timers.html
+[`console`]: console.markdown
+[`process` object]: process.markdown#进程
+[`setInterval()`]: #setintervalcb-ms
+[`setTimeout()`]: #settimeoutcb-ms
+[buffer section]: buffer.markdown
+[module system documentation]: modules.markdown
+[Modules]: modules.markdown#模块
+[timers]: timers.markdown
