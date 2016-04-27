@@ -7,6 +7,7 @@ _翻译的过程也是学习和系统性梳理的过程~_
 * [概要](synopsis.markdown)
 * [事件（Events）](events.markdown)
 * [文件系统（File System）](fs.markdown)
+* [全局对象（Globals）](globals.markdown)
 * [HTTP](http.markdown)
 * [路径（Path）](path.markdown)
 * [查询字符串（Query Strings）](querystring.markdown)
